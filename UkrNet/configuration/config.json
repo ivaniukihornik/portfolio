@@ -1,0 +1,25 @@
+{
+  "browser_id": 1,
+  "headless": false,
+
+  "default_account_login": "ivaniuk_test",
+  "default_account_password": "pJgYa_UW.4_wD.S",
+  "default_account_email": "ivaniuk_test@ukr.net",
+  "default_account_nonexistent_password": "uN3x1st_inG",
+  "default_account_nonexistent_login": "ivaniuk_test_nonexistent",
+
+  "maximum_length_login": "longlonglonglonglonglonglongname",
+  "maximum_length_password": "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglongpass",
+
+  "minimum_length_login": "u",
+  "minimum_length_password": "Pass_123",
+
+  "login_with_allowed_symbols": "_us.er-",
+  "password_for_login_with_allowed_symbols": "Pass_word",
+
+  "login_for_password_with_special_symbols": "user",
+  "password_with_special_symbols": "ї皮%4D^ق\uE498",
+
+  "more_than_maximum_length_login": "longlonglonglonglonglonglongname1",
+  "more_than_maximum_length_password": "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglongpass1"
+}
