@@ -143,6 +143,11 @@ class BasePage:
         except TimeoutException:
             return False
 
+    def _is_focused(self, locator):
+        element = self.__wait_until_element_visible(locator)
+        focused_element = self.driver.switch_to.active_element
+        return element == focused_element
+
     def _is_target_blank_link(self, locator):
         try:
             return self._get_attribute(locator, 'target') == '_blank'

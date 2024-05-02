@@ -1,7 +1,9 @@
-from selenium.common import TimeoutException
+import time
+
 from selenium.webdriver.common.by import By
 
-from UkrNet.environments.urls import INBOX_PAGE_URL, LOGIN_PAGE_URL
+from UkrNet.constants import MAXIMUM_LOGIN_LENGTH
+from UkrNet.environments.urls import LOGIN_PAGE_URL
 from UkrNet.utilities.web_ui.base_page import BasePage
 
 
@@ -141,6 +143,12 @@ class LoginPage(BasePage):
         self._click(self.__sign_up_link)
         return self
 
+    def put_login_inside_spaces(self, login: str):
+        start_spaces_count = self._generate_random_number(1, MAXIMUM_LOGIN_LENGTH - len(login) - 1)
+        end_spaces_count = self._generate_random_number(1, MAXIMUM_LOGIN_LENGTH - len(login) -
+                                                        start_spaces_count)
+        return f'{" " * start_spaces_count}{login}{" " * end_spaces_count}'
+
     def check_public_computer_checkbox(self):
         self._click(self.__public_computer_checkbox)
         return self
@@ -235,6 +243,9 @@ class LoginPage(BasePage):
 
     def is_password_field_underlined(self):
         return self._is_displayed(self.__password_field_underline)
+
+    def is_login_field_focused(self):
+        return self._is_focused(self.__login_field)
 
     def is_password_field_text_selected(self, inputted_password):
         self.hold_on_password_eye()

@@ -23,5 +23,7 @@
   "password_with_special_symbols": "ї皮%4D^ق\uE498",
 
   "more_than_maximum_length_login": "longlonglonglonglonglonglongname1",
-  "more_than_maximum_length_password": "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglongpass1"
+  "more_than_maximum_length_password": "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglongpass1",
+
+  "login_only_with_spaces": "      "
 }

@@ -115,7 +115,7 @@ def get_expected_text(language):
             return {}
 
 
-def get_error_message(language):
+def get_wrong_data_error_message(language):
     match language:
         case 'uk':
             return 'Неправильні дані'
@@ -123,3 +123,13 @@ def get_error_message(language):
             return 'Неправильные данные'
         case 'en':
             return 'Wrong login or password'
+
+
+def get_empty_login_error_message(language):
+    match language:
+        case 'uk':
+            return 'Поле має бути заповнене'
+        case 'ru':
+            return 'Поле должно быть заполнено'
+        case 'en':
+            return 'You can’t leave this empty'

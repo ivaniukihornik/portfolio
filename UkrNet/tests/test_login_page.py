@@ -23,7 +23,7 @@ class TestLoginPage:
                 assert default_language == ER.DEFAULT_LANGUAGE, 'default language is incorrect'
         with allure.step('Check page URL'):
             current_url = login_page._get_current_url()
-            with allure.step(f'URL is {urls.LOGIN_PAGE_URL}'):
+            with allure.step(f'Expected Result: URL is {urls.LOGIN_PAGE_URL}'):
                 assert current_url == urls.LOGIN_PAGE_URL, 'url is incorrect'
 
     @allure.suite('Page opening')
