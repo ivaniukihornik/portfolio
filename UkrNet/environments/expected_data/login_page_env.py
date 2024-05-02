@@ -1,6 +1,4 @@
 DEFAULT_LANGUAGE = 'uk'
-MAXIMUM_LOGIN_LENGTH = 32
-MAXIMUM_PASSWORD_LENGTH = 128
 
 
 def get_title(language):

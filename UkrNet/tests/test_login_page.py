@@ -1,13 +1,13 @@
-import time
-
 import allure
 import pytest
 
 from UkrNet.environments import urls
 
 from UkrNet.environments.expected_data import login_page_env as ER
-from UkrNet.environments.expected_data.login_page_env import MAXIMUM_LOGIN_LENGTH, MAXIMUM_PASSWORD_LENGTH
+from UkrNet.constants import MAXIMUM_LOGIN_LENGTH, MAXIMUM_PASSWORD_LENGTH, MINIMUM_LOGIN_LENGTH, \
+    MINIMUM_PASSWORD_LENGTH
 from UkrNet.environments.languages import ALL_LANGUAGES
+from UkrNet.environments.urls import ACCOUNT_RECOVERY_URL, INBOX_PAGE_URL, SIGN_UP_PAGE_URL
 
 
 @allure.parent_suite('Login Page')
@@ -70,10 +70,10 @@ class TestLoginPage:
             login_page._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
-        with allure.step('Redirect to user\'s inbox'):
+        with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
-            assert login_page.is_inbox_opened(), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot()
+            assert login_page._is_url_opened(INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     @allure.suite('Login')
@@ -128,41 +128,41 @@ class TestLoginPage:
     @allure.testcase('https://app.qase.io/case/PF-12', 'Login with username and password of maximum allowed length')
     @allure.severity('critical')
     @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_existent_credentials(self, open_login_page, create_inbox_page, conf):
+    def test_login_with_maximum_allowed_length_credentials(self, open_login_page, create_inbox_page, conf):
         login_page = open_login_page
         with allure.step('Input username and password'):
             login_page.input_login(conf.maximum_length_login).input_password(conf.maximum_length_password)
             login_page._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
-        with allure.step('Redirect to user\'s inbox'):
+        with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
-            assert login_page.is_inbox_opened(), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot()
+            assert login_page._is_url_opened(INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-13', 'Login with username and password of minimum allowed length')
     @allure.severity('critical')
     @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_existent_credentials(self, open_login_page, create_inbox_page, conf):
+    def test_login_with_minimum_allowed_length_credentials(self, open_login_page, create_inbox_page, conf):
         login_page = open_login_page
         with allure.step('Input username and password'):
             login_page.input_login(conf.minimum_length_login).input_password(conf.minimum_length_password)
             login_page._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
-        with allure.step('Redirect to user\'s inbox'):
+        with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
-            assert login_page.is_inbox_opened(), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot()
+            assert login_page._is_url_opened(INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-14', 'Login with username containing allowed symbols')
     @allure.severity('critical')
     @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_existent_credentials(self, open_login_page, create_inbox_page, conf):
+    def test_login_with_username_containing_allowed_symbols(self, open_login_page, create_inbox_page, conf):
         login_page = open_login_page
         with allure.step('Input username and password'):
             login_page.input_login(conf.login_with_allowed_symbols).input_password(
@@ -170,17 +170,17 @@ class TestLoginPage:
             login_page._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
-        with allure.step('Redirect to user\'s inbox'):
+        with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
-            assert login_page.is_inbox_opened(), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot()
+            assert login_page._is_url_opened(INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-15', 'Login with password containing special symbols')
     @allure.severity('critical')
     @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_existent_credentials(self, open_login_page, create_inbox_page, conf):
+    def test_login_with_password_containing_special_symbols(self, open_login_page, create_inbox_page, conf):
         login_page = open_login_page
         with allure.step('Input username and password'):
             login_page.input_login(conf.login_for_password_with_special_symbols).input_password(
@@ -188,10 +188,10 @@ class TestLoginPage:
             login_page._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
-        with allure.step('Redirect to user\'s inbox'):
+        with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
-            assert login_page.is_inbox_opened(), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot()
+            assert login_page._is_url_opened(INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     # @allure.suite('Login')
@@ -259,7 +259,7 @@ class TestLoginPage:
             expected_login = login_page._lslice_text(conf.more_than_maximum_length_login, MAXIMUM_LOGIN_LENGTH)
             with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_LOGIN_LENGTH} characters to'
                              f' Username field. Inputted value is: "{expected_login}"'):
-                login_page._make_screenshot()
+                login_page.select_inputted_login()._make_screenshot()
                 assert (login_page.get_inputted_login_length() ==
                         MAXIMUM_LOGIN_LENGTH), f'Inputted more than {MAXIMUM_LOGIN_LENGTH} chars'
                 assert (login_page.get_inputted_login() ==
@@ -270,9 +270,82 @@ class TestLoginPage:
             expected_password = login_page._lslice_text(conf.more_than_maximum_length_password, MAXIMUM_PASSWORD_LENGTH)
             with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_PASSWORD_LENGTH} characters to '
                              f'Password field. Inputted value is: "{expected_password}"'):
-                login_page.hold_on_password_eye()._make_screenshot()
+                login_page.hold_on_password_eye().select_inputted_password()._make_screenshot()
                 assert (login_page.get_inputted_password_length() ==
                         MAXIMUM_PASSWORD_LENGTH), f'Inputted more than {MAXIMUM_PASSWORD_LENGTH} chars'
                 assert (login_page.get_inputted_password() ==
                         expected_password), f'Inputted password isn\'t: "{expected_password}"'
 
+    @allure.suite('Login form')
+    @allure.testcase('https://app.qase.io/case/PF-24', 'Show password icon')
+    @allure.severity('minor')
+    def test_show_password_icon(self, open_login_page, conf):
+        login_page = open_login_page
+        with allure.step('Input some data to Password field'):
+            login_page.input_password(conf.default_account_password)
+            login_page._make_screenshot()
+            with allure.step('Expected Result: Password is hidden by default'):
+                assert login_page.is_password_hidden(), 'Password isn\'t hidden'
+            with allure.step('Expected Result: Icon eye is opened'):
+                assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
+        with allure.step('Press and hold "Show password" icon'):
+            login_page.hold_on_password_eye()._make_screenshot()
+            with allure.step('Expected Result: Password is displayed when holding on icon'):
+                assert login_page.is_password_visible(), 'Password isn\'t displayed'
+            with allure.step('Expected Result: Icon eye is closed'):
+                assert login_page.is_password_field_eye_closed(), 'Icon eye isn\'t closed'
+        with allure.step('Release "Show password" icon'):
+            login_page.release_password_eye()._make_screenshot()
+            with allure.step('Expected Result: Password is hidden when not holding on icon'):
+                assert login_page.is_password_hidden(), 'Password isn\'t hidden'
+            with allure.step('Expected Result: Icon eye is opened'):
+                assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
+
+    @allure.suite('Login form')
+    @allure.testcase('https://app.qase.io/case/PF-16', 'Continue button state')
+    @allure.severity('trivial')
+    def test_continue_button_state(self, open_login_page, conf):
+        login_page = open_login_page
+        random_login = login_page._generate_random_string(login_page._generate_random_number(
+            MINIMUM_LOGIN_LENGTH, MAXIMUM_LOGIN_LENGTH))
+        random_password = login_page._generate_random_string(login_page._generate_random_number(
+            MINIMUM_PASSWORD_LENGTH, MAXIMUM_PASSWORD_LENGTH))
+        with allure.step('Leave Username and Password fields empty'):
+            login_page.input_login(conf.blank_input, is_clear=True).input_password(conf.blank_input,
+                                                                                   is_clear=True)._make_screenshot()
+            with allure.step('Expected Result: Continue button is disabled'):
+                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Input any username and leave Password field empty'):
+            login_page.input_login(random_login).input_password(conf.blank_input, is_clear=True)._make_screenshot()
+            with allure.step('Expected Result: Continue button is disabled'):
+                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Input any password and leave Username field empty'):
+            login_page.input_login(conf.blank_input, is_clear=True).input_password(random_password)._make_screenshot()
+            with allure.step('Expected Result: Continue button is disabled'):
+                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Input any username and password'):
+            login_page.input_login(random_login, is_clear=True).input_password(random_password,
+                                                                               is_clear=True)._make_screenshot()
+            with allure.step('Expected Result: Continue button is enabled'):
+                assert login_page.is_continue_button_enabled(), 'Button isn\'t enabled'
+
+    @allure.suite('Login Form')
+    @allure.testcase('https://app.qase.io/case/PF-25', 'Links correctness')
+    @allure.severity('major')
+    def test_links_correctness(self, open_login_page):
+        login_page = open_login_page
+        is_trouble_sing_in_link_has_target_blank_attr = login_page.is_trouble_sing_in_link_has_target_blank_attr()
+        is_sign_up_link_has_target_blank_attr = login_page.is_sign_up_link_has_target_blank_attr()
+        with allure.step('Follow "Trouble signing in?" link'):
+            login_page.press_trouble_sign_in_link()._make_screenshot(is_current_url_needed=True)
+            with allure.step('Expected Result: Link is opened in current tab'):
+                assert not is_trouble_sing_in_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
+            with allure.step(f'Expected Result: "Trouble signing in?" goes to {ACCOUNT_RECOVERY_URL}'):
+                assert login_page._is_url_opened(ACCOUNT_RECOVERY_URL), f'URL isn\'t {ACCOUNT_RECOVERY_URL}'
+        with allure.step('Return to Login Page and follow "Sign up" link'):
+            login_page._back()
+            login_page.press_sign_up_link()._make_screenshot(is_current_url_needed=True)
+            with allure.step('Expected Result: Link is opened in current tab'):
+                assert not is_sign_up_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
+            with allure.step(f'Expected Result: Sign up goes to {SIGN_UP_PAGE_URL}'):
+                assert login_page._is_url_opened(SIGN_UP_PAGE_URL), f'URL isn\'t {SIGN_UP_PAGE_URL}'

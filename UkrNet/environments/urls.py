@@ -1,4 +1,9 @@
-from UkrNet.constants import ACCOUNTS_SUBDOMAIN, MAILBOX_SUBDOMAIN
+DOMAIN = 'https://{}ukr.net'
+ACCOUNTS_SUBDOMAIN = DOMAIN.format('accounts.')
+MAILBOX_SUBDOMAIN = DOMAIN.format('mail.')
 
+SIGN_UP_PAGE_URL = ACCOUNTS_SUBDOMAIN + '/registration'
 LOGIN_PAGE_URL = ACCOUNTS_SUBDOMAIN + '/login'
+ACCOUNT_RECOVERY_URL = ACCOUNTS_SUBDOMAIN + '/recovery'
+
 INBOX_PAGE_URL = MAILBOX_SUBDOMAIN + '/desktop#msglist/f0/p0'

@@ -11,9 +11,12 @@ class LoginPage(BasePage):
 
     __language_button = (By.XPATH, '//button[@data-lang="{}"]')
     __selected_language = (By.XPATH, '//button[contains(@class, "_30cp__sx")]')
+
     __h1 = (By.CSS_SELECTOR, 'div._13Fm_HHI:nth-child({})>h1')
     __h2 = (By.CSS_SELECTOR, 'div._13Fm_HHI:nth-child({})>h2')
+
     __login_form_title = (By.CSS_SELECTOR, 'h2._1azB1YgZ')
+
     __login_field = (By.XPATH, '//input[@name="login"]')
     __login_field_name = (__login_field[0], f'{__login_field[1]}/ancestor::label/p')
     __login_field_name_pos_focus_modifier = (__login_field[0], f'{__login_field[1]}[contains(@class, "focus-visible")]')
@@ -22,24 +25,32 @@ class LoginPage(BasePage):
     __login_field_underline = (__login_field[0], f'{__login_field[1]}/ancestor::label/div[contains(@class,'
                                                  f' "ei5QaAJ0")]')
     __email_domain = (By.CSS_SELECTOR, 'span._38_4DkC1')
+
     __password_field = (By.XPATH, '//input[@name="password"]')
     __password_field_name = (__password_field[0], f'{__password_field[1]}/ancestor::label/p')
     __password_field_name_pos_focus_modifier = (__password_field[0], f'{__password_field[1]}[contains(@class,'
                                                                      f' "focus-visible")]')
-    __password_field_name_pos_input_modifier = (__password_field_name[0], f'{__password_field_name[1]}[contains(@class, '
-                                                                          f'"_3aAVn0Us")]')
+    __password_field_name_pos_input_modifier = (__password_field_name[0], f'{__password_field_name[1]}[contains(@class,'
+                                                                          f' "_3aAVn0Us")]')
     __password_field_underline = (__password_field[0], f'{__password_field[1]}/ancestor::label/div[contains(@class,'
                                                        f' "ei5QaAJ0")]')
     __password_eye = (__password_field[0], f'{__password_field[1]}/ancestor::div/button')
+    __password_eye_state = (__password_eye[0], f'{__password_eye[1]}//*[name()="use"]')
+
     __error_message = (By.CSS_SELECTOR, 'p._1oZFLSZ_')
+
     __animation_item_switcher = (By.CSS_SELECTOR, 'li._82nIdC0D:nth-child({})')
     __footer_of_animation = (By.CSS_SELECTOR, 'p._9AaSh-oS')
+
     __public_computer_checkbox = (By.XPATH, '//input[@type="checkbox"]/ancestor::label')
     __public_computer_checkbox_name = (By.CSS_SELECTOR, 'div._2D_WbGHd')
+
     __continue_button = (By.XPATH, '//button[@type="submit"]')
     __continue_button_name = (__continue_button[0], f'{__continue_button[1]}/div')
+
     __trouble_sign_in_link = (By.CSS_SELECTOR, 'div._3GXVBC43>a:nth-child(1)')
     __sign_up_link = (By.CSS_SELECTOR, 'div._3GXVBC43>a:nth-child(2)')
+
     __support_title = (By.CSS_SELECTOR, 'h4._3qFvKK5H')
     __privacy_policy_link = (By.CSS_SELECTOR, 'div._3ZKKngSa>a')
     __terms_of_service_link = (By.CSS_SELECTOR, 'div._1DEoOWjX>a')
@@ -110,16 +121,24 @@ class LoginPage(BasePage):
         self._click(self.__password_field)
         return self
 
-    def input_login(self, login):
-        self._input_text(self.__login_field, login)
+    def input_login(self, login, is_clear=False):
+        self._input_text(self.__login_field, login, is_clear)
         return self
 
-    def input_password(self, password):
-        self._input_text(self.__password_field, password)
+    def input_password(self, password, is_clear=False):
+        self._input_text(self.__password_field, password, is_clear)
         return self
 
     def press_continue_button(self):
         self._click(self.__continue_button)
+        return self
+
+    def press_trouble_sign_in_link(self):
+        self._click(self.__trouble_sign_in_link)
+        return self
+
+    def press_sign_up_link(self):
+        self._click(self.__sign_up_link)
         return self
 
     def check_public_computer_checkbox(self):
@@ -128,6 +147,18 @@ class LoginPage(BasePage):
 
     def hold_on_password_eye(self):
         self._hold_mouse(self.__password_eye)
+        return self
+
+    def release_password_eye(self):
+        self._release_mouse(self.__password_eye)
+        return self
+
+    def select_inputted_login(self):
+        self._select_text(self.__login_field)
+        return self
+
+    def select_inputted_password(self):
+        self._select_text(self.__password_field)
         return self
 
     def get_selected_language(self):
@@ -199,13 +230,6 @@ class LoginPage(BasePage):
     def get_inputted_password_length(self):
         return len(self.get_inputted_password())
 
-    def is_inbox_opened(self):
-        try:
-            self._wait_url_to_be(INBOX_PAGE_URL)
-            return True
-        except TimeoutException:
-            return False
-
     def is_login_field_underlined(self):
         return self._is_displayed(self.__login_field_underline)
 
@@ -217,8 +241,8 @@ class LoginPage(BasePage):
         self._copy_text_to_clipboard()
         return self._read_text_from_clipboard() == inputted_password
 
-    def is_continue_button_disabled(self):
-        return not self._is_enabled(self.__continue_button)
+    def is_continue_button_enabled(self):
+        return self._is_enabled(self.__continue_button)
 
     def is_login_field_name_displayed_as_placeholder(self):
         return not (self._is_displayed(self.__login_field_name_pos_focus_modifier, mode='fast') |
@@ -235,3 +259,21 @@ class LoginPage(BasePage):
     def is_password_field_name_displayed_above_field(self):
         return (self._is_displayed(self.__password_field_name_pos_focus_modifier, mode='fast') |
                 self._is_displayed(self.__password_field_name_pos_input_modifier, mode='fast'))
+
+    def is_password_hidden(self):
+        return self._get_attribute(self.__password_field, 'type') == 'password'
+
+    def is_password_visible(self):
+        return self._get_attribute(self.__password_field, 'type') == 'text'
+
+    def is_password_field_eye_opened(self):
+        return '-unmask' in self._get_attribute(self.__password_eye_state, 'xlink:href')
+
+    def is_password_field_eye_closed(self):
+        return '-mask' in self._get_attribute(self.__password_eye_state, 'xlink:href')
+
+    def is_trouble_sing_in_link_has_target_blank_attr(self):
+        return self._is_target_blank_link(self.__trouble_sign_in_link)
+
+    def is_sign_up_link_has_target_blank_attr(self):
+        return self._is_target_blank_link(self.__sign_up_link)

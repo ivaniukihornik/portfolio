@@ -1,4 +1,5 @@
 import json
+import time
 
 import allure
 import pytest
@@ -22,6 +23,7 @@ def conf():
 @allure.title('Create webdriver')
 @pytest.fixture()
 def create_driver(conf):
+    time.sleep(3)  # Using delay between requests not to be banned by urk.net
     driver = DriverFactory.create_driver(driver_id=conf.browser_id)
     driver.maximize_window()
     yield driver
