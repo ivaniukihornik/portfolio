@@ -3,3 +3,4 @@
 3. Install requirements.txt
 4. Install allure
 5. Install docker
+6. Install xclip if linux user
