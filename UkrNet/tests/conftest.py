@@ -45,10 +45,8 @@ def open_inbox_page(create_driver, open_login_page, conf):
     if login_page._is_url_opened(urls.INBOX_PAGE_URL):
         return InboxPage(create_driver)
 
+
 @pytest.fixture()
 @allure.title('Create Inbox Page')
 def create_inbox_page(create_driver):
     return InboxPage(create_driver)
-
-
-

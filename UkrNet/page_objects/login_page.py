@@ -1,9 +1,6 @@
-import time
-
 from selenium.webdriver.common.by import By
 
 from UkrNet.constants import MAXIMUM_LOGIN_LENGTH
-from UkrNet.environments.urls import LOGIN_PAGE_URL
 from UkrNet.utilities.web_ui.base_page import BasePage
 
 
@@ -61,14 +58,16 @@ class LoginPage(BasePage):
         return self._get_text((self.__language_button[0], self.__language_button[1].format(language)))
 
     def __get_h1(self, animation_number):
+        """Returns <h1> header of animation by animation number"""
         return self.switch_animation(animation_number)._get_text((self.__h1[0], self.__h1[1].format(animation_number)))
 
     def __get_h2(self, animation_number):
+        """Returns <h2> header of animation by animation number"""
         return self.switch_animation(animation_number)._get_text((self.__h2[0], self.__h2[1].format(animation_number)))
-    
+
     def __get_footer_of_animation(self, animation_number):
-        self.switch_animation(animation_number)
-        return self._get_text(self.__footer_of_animation)
+        """Returns footer of animation by animation number"""
+        return self.switch_animation(animation_number)._get_text(self.__footer_of_animation)
 
     def __get_login_form_title(self):
         return self._get_text(self.__login_form_title)
@@ -103,11 +102,8 @@ class LoginPage(BasePage):
     def __get_terms_of_service_link_name(self):
         return self._get_text(self.__terms_of_service_link)
 
-    def open_page(self):
-        self.driver.execute_script("window.open('about:blank', '_blank');")
-        self._open_page(LOGIN_PAGE_URL)
-
-    def switch_animation(self, animation_number):
+    def switch_animation(self, animation_number: int):
+        """Switches the animation to obtained number"""
         self._click((self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number)))
         return self
 
@@ -135,6 +131,10 @@ class LoginPage(BasePage):
         self._click(self.__continue_button)
         return self
 
+    def login(self, login, password):
+        self.input_login(login).input_password(password).press_continue_button()
+        return self
+
     def press_trouble_sign_in_link(self):
         self._click(self.__trouble_sign_in_link)
         return self
@@ -143,7 +143,8 @@ class LoginPage(BasePage):
         self._click(self.__sign_up_link)
         return self
 
-    def put_login_inside_spaces(self, login: str):
+    def put_login_inside_spaces(self, login):
+        """Surrounds obtained login with random amount of spaces and returns the result string"""
         start_spaces_count = self._generate_random_number(1, MAXIMUM_LOGIN_LENGTH - len(login) - 1)
         end_spaces_count = self._generate_random_number(1, MAXIMUM_LOGIN_LENGTH - len(login) -
                                                         start_spaces_count)
@@ -172,10 +173,15 @@ class LoginPage(BasePage):
     def get_selected_language(self):
         return self._get_attribute(locator=self.__selected_language, attribute='data-lang')
 
-    def get_text_of_element(self, element, language=''):
+    def get_text_of_element(self, element):
+        """Returns the text of element by specific element name"""
         match element:
-            case 'LANGUAGE_BUTTON_NAME':
-                return self.__get_language_button_name(language)
+            case 'UK_LANGUAGE_BUTTON_NAME':
+                return self.__get_language_button_name('uk')
+            case 'RU_LANGUAGE_BUTTON_NAME':
+                return self.__get_language_button_name('ru')
+            case 'EN_LANGUAGE_BUTTON_NAME':
+                return self.__get_language_button_name('en')
             case 'H1_ANIMATION_1':
                 return self.__get_h1(1)
             case 'H2_ANIMATION_1':
@@ -248,9 +254,9 @@ class LoginPage(BasePage):
         return self._is_focused(self.__login_field)
 
     def is_password_field_text_selected(self, inputted_password):
+        """Gets selected text and compares it with text from argument"""
         self.hold_on_password_eye()
-        self._copy_text_to_clipboard()
-        return self._read_text_from_clipboard() == inputted_password
+        return self._get_selected_text() == inputted_password
 
     def is_continue_button_enabled(self):
         return self._is_enabled(self.__continue_button)
@@ -288,3 +294,7 @@ class LoginPage(BasePage):
 
     def is_sign_up_link_has_target_blank_attr(self):
         return self._is_target_blank_link(self.__sign_up_link)
+
+    def is_animation_active(self, animation_number):
+        return '_3MsdXPEs' in self._get_attribute(
+            (self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number)), 'class')

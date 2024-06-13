@@ -32,7 +32,9 @@ def get_expected_text(language):
     match language:
         case 'uk':
             return {
-                'LANGUAGE_BUTTON_NAME': 'Українська',
+                'UK_LANGUAGE_BUTTON_NAME': 'Українська',
+                'RU_LANGUAGE_BUTTON_NAME': 'Русский',
+                'EN_LANGUAGE_BUTTON_NAME': 'English',
                 'H1_ANIMATION_1': 'ЦІЛОДОБОВА СЛУЖБА ПІДТРИМКИ',
                 'H2_ANIMATION_1': 'Поштою і по телефону.',
                 'H1_ANIMATION_2': 'МИТТЄВА ДОСТАВКА ЛИСТІВ',
@@ -59,7 +61,9 @@ def get_expected_text(language):
             }
         case 'ru':
             return {
-                'LANGUAGE_BUTTON_NAME': 'Русский',
+                'UK_LANGUAGE_BUTTON_NAME': 'Українська',
+                'RU_LANGUAGE_BUTTON_NAME': 'Русский',
+                'EN_LANGUAGE_BUTTON_NAME': 'English',
                 'H1_ANIMATION_1': 'КРУГЛОСУТОЧНАЯ СЛУЖБА ПОДДЕРЖКИ',
                 'H2_ANIMATION_1': 'По почте и телефону.',
                 'H1_ANIMATION_2': 'МГНОВЕННАЯ ДОСТАВКА ПИСЕМ',
@@ -86,7 +90,9 @@ def get_expected_text(language):
             }
         case 'en':
             return {
-                'LANGUAGE_BUTTON_NAME': 'English',
+                'UK_LANGUAGE_BUTTON_NAME': 'Українська',
+                'RU_LANGUAGE_BUTTON_NAME': 'Русский',
+                'EN_LANGUAGE_BUTTON_NAME': 'English',
                 'H1_ANIMATION_1': '24/7 SUPPORT SERVICE',
                 'H2_ANIMATION_1': 'Via phone and e-mail.',
                 'H1_ANIMATION_2': 'LIGHTNING-FAST MESSAGE DELIVERY',

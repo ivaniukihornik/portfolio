@@ -3,7 +3,6 @@ import string
 import time
 
 import allure
-import pyperclip
 from selenium.common import TimeoutException
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
@@ -21,6 +20,8 @@ class BasePage:
         self.actions = ActionChains(driver)
 
     def __wait_until_element_located(self, locator, mode=''):
+        """Waits for element to be present in DOM tree of page and returns it if it is or raises TimeoutException if it
+        is not. Mode describes the amount of time to wait"""
         match mode:
             case 'fast':
                 return self.__fast_wait.until(EC.presence_of_element_located(locator))
@@ -28,9 +29,11 @@ class BasePage:
                 return self.__wait.until(EC.presence_of_element_located(locator))
 
     def __wait_until_element_visible(self, locator):
+        """Waits for element to be visible on page and returns it if it is or raises TimeoutException if it is not."""
         return self.__wait.until(EC.visibility_of_element_located(locator))
 
     def __wait_until_element_clickable(self, locator):
+        """Waits for element to be clickable on page and returns it if it is or raises TimeoutException if it is not."""
         return self.__wait.until(EC.element_to_be_clickable(locator))
 
     def __hard_wait(self, seconds):
@@ -46,10 +49,11 @@ class BasePage:
     def _back(self):
         self.driver.back()
 
-    def _close_window(self):
-        self.driver.close()
-
     def _make_screenshot(self, name='Screenshot', is_current_url_needed=False, with_hard_wait=False):
+        """Makes a screenshot of page current state for allure report. Can take arguments:
+           \n\t- name: screenshot name;
+           \n\t- is_current_url_needed: if current url is needed to be attached;
+           \n\t- with_hard_wait: if some pause is needed before making a screenshot"""
         if with_hard_wait:
             self.__hard_wait(0.5)
         if is_current_url_needed:
@@ -61,13 +65,14 @@ class BasePage:
         self.__wait_until_element_clickable(locator).click()
 
     def _input_text(self, locator, text, is_clear=False):
+        """Inputs text to field by locator. Clears the field before inputting if 'is_clear' argument is True"""
         if is_clear:
-            self._select_text(locator)
             self._clear_text(locator)
         self.__wait_until_element_visible(locator).send_keys(text)
 
     def _clear_text(self, locator):
-        self.__wait_until_element_visible(locator).send_keys(Keys.BACKSPACE)
+        self._select_text(locator)
+        self.__wait_until_element_clickable(locator).send_keys(Keys.BACKSPACE)
 
     def _hold_mouse(self, locator):
         self.actions.click_and_hold(self.__wait_until_element_clickable(locator))
@@ -80,15 +85,9 @@ class BasePage:
     def _select_text(self, locator):
         self.__wait_until_element_clickable(locator).send_keys(Keys.CONTROL + 'a')
 
-    def _copy_text_to_clipboard(self):
-        self.driver.execute_script('document.execCommand("copy")')
-
     @staticmethod
-    def _read_text_from_clipboard():
-        return pyperclip.paste()
-
-    @staticmethod
-    def _lslice_text(text: str, length):
+    def _lslice_text(text, length):
+        """Returns the first part of obtained text of specified length"""
         return text[0:length]
 
     @staticmethod
@@ -118,16 +117,13 @@ class BasePage:
     def _get_description(self):
         return self._get_attribute(self.__description, 'content')
 
+    def _get_selected_text(self):
+        return self.driver.execute_script('return window.getSelection().toString()')
+
     def _is_url_opened(self, url):
         try:
             self.__wait.until(EC.url_contains(url))
             return True
-        except TimeoutException:
-            return False
-
-    def _is_selected(self, locator):
-        try:
-            return self.__wait_until_element_visible(locator).is_selected()
         except TimeoutException:
             return False
 
