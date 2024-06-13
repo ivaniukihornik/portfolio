@@ -12,19 +12,34 @@ from UkrNet.environments.languages import ALL_LANGUAGES
 @allure.parent_suite('Login Page')
 class TestLoginPage:
     @allure.suite('Page opening')
-    @allure.testcase('https://app.qase.io/case/PF-2', 'Page opening')
+    @allure.testcase('https://app.qase.io/case/PF-2', 'Opening when unauthorized')
     @allure.severity('blocker')
-    def test_page_opening(self, open_login_page):
-        login_page = open_login_page
-        with allure.step('Check default language'):
+    def test_opening_when_unauthorized(self, open_login_page):
+        with allure.step('Open Login Page'):
+            login_page = open_login_page
             default_language = login_page.get_selected_language()
             login_page._make_screenshot()
-            with allure.step(f'Expected Result: Default language is {ER.DEFAULT_LANGUAGE}'):
-                assert default_language == ER.DEFAULT_LANGUAGE, 'default language is incorrect'
-        with allure.step('Check page URL'):
-            current_url = login_page._get_current_url()
-            with allure.step(f'Expected Result: URL is {urls.LOGIN_PAGE_URL}'):
-                assert current_url == urls.LOGIN_PAGE_URL, 'url is incorrect'
+        with allure.step(f'Expected Result: Default language is {ER.DEFAULT_LANGUAGE}'):
+            assert default_language == ER.DEFAULT_LANGUAGE, 'default language is incorrect'
+        current_url = login_page._get_current_url()
+        with allure.step('Expected Result: Login field is focused'):
+            assert login_page.is_login_field_focused(), 'Login field isn\'t focused'
+        with allure.step('Expected Result: First animation is active'):
+            assert login_page.is_animation_active(1), 'First animation isn\'t active'
+        with allure.step(f'Expected Result: URL is {urls.LOGIN_PAGE_URL}'):
+            assert current_url == urls.LOGIN_PAGE_URL, 'url is incorrect'
+
+    @allure.suite('Page opening')
+    @allure.testcase('https://app.qase.io/case/PF-92', 'Opening when authorized')
+    @allure.severity('major')
+    def test_opening_when_authorized(self, open_inbox_page, conf):
+        inbox_page = open_inbox_page
+        with allure.step('Open Login Page'):
+            inbox_page._open_page(urls.LOGIN_PAGE_URL)
+        with allure.step('Expected Result: Redirect to user\'s inbox'):
+            assert inbox_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
+            inbox_page._make_screenshot(is_current_url_needed=True)
+            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
     @allure.suite('Page opening')
     @allure.testcase('https://app.qase.io/case/PF-3', 'Title and Description')
@@ -37,27 +52,28 @@ class TestLoginPage:
             title = login_page._get_title()
             description = login_page._get_description()
         with (allure.step('Check Title and Description')):
-            assert all([title == ER.get_title(language), description == ER.get_description(language)
-                        ]), 'Wrong Title or/and Description'
+            assert all([title == ER.get_title(language), description == ER.get_description(language)]), \
+                'Wrong Title or/and Description'
 
     @allure.suite('Page layout')
     @allure.testcase('https://app.qase.io/case/PF-8', 'Text correctness')
     @allure.severity('minor')
     @pytest.mark.parametrize('language', ALL_LANGUAGES)
-    @pytest.mark.parametrize('element', ['LANGUAGE_BUTTON_NAME', 'H1_ANIMATION_1', 'H2_ANIMATION_1', 'H1_ANIMATION_2',
-                                         'H2_ANIMATION_2', 'H1_ANIMATION_3', 'H2_ANIMATION_3', 'FOOTER_ANIMATION_3',
-                                         'H1_ANIMATION_4', 'H2_ANIMATION_4', 'H1_ANIMATION_5', 'H2_ANIMATION_5',
-                                         'LOGIN_FORM_TITLE', 'LOGIN_FIELD_NAME', 'EMAIL_DOMAIN', 'PASSWORD_FIELD_NAME',
-                                         'PUBLIC_COMPUTER_CHECKBOX_NAME', 'CONTINUE_BUTTON_NAME',
-                                         'TROUBLE_SIGN_IN_LINK_NAME', 'SIGN_UP_LINK_NAME', 'SUPPORT_TITLE',
-                                         'PRIVACY_POLICY_LINK_NAME', 'TERMS_OF_SERVICE_LINK_NAME'])
+    @pytest.mark.parametrize('element',
+                             ['UK_LANGUAGE_BUTTON_NAME', 'RU_LANGUAGE_BUTTON_NAME', 'EN_LANGUAGE_BUTTON_NAME',
+                              'H1_ANIMATION_1', 'H2_ANIMATION_1', 'H1_ANIMATION_2', 'H2_ANIMATION_2', 'H1_ANIMATION_3',
+                              'H2_ANIMATION_3', 'FOOTER_ANIMATION_3', 'H1_ANIMATION_4', 'H2_ANIMATION_4',
+                              'H1_ANIMATION_5', 'H2_ANIMATION_5', 'LOGIN_FORM_TITLE', 'LOGIN_FIELD_NAME',
+                              'EMAIL_DOMAIN', 'PASSWORD_FIELD_NAME', 'PUBLIC_COMPUTER_CHECKBOX_NAME',
+                              'CONTINUE_BUTTON_NAME', 'TROUBLE_SIGN_IN_LINK_NAME', 'SIGN_UP_LINK_NAME', 'SUPPORT_TITLE',
+                              'PRIVACY_POLICY_LINK_NAME', 'TERMS_OF_SERVICE_LINK_NAME'])
     def test_text_correctness(self, open_login_page, language, element):
         login_page = open_login_page
-        with allure.step('Set Ukrainian language'):
+        with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
         with allure.step(f'Check text of {element} element'):
             expected_text = ER.get_expected_text(language)[element]
-            actual_text = login_page.get_text_of_element(element, language)
+            actual_text = login_page.get_text_of_element(element)
             login_page._make_screenshot()
             assert actual_text == expected_text, f'Text of {element} element is incorrect'
 
@@ -83,23 +99,23 @@ class TestLoginPage:
     @pytest.mark.parametrize('language', ALL_LANGUAGES)
     def test_login_with_nonexistent_password(self, open_login_page, language, conf):
         login_page = open_login_page
-        with allure.step('Set Ukrainian language'):
+        with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
         with allure.step('Input existent account username and nonexistent password'):
             login_page.input_login(conf.default_account_login).input_password(conf.default_account_nonexistent_password)
-            login_page._make_screenshot()
+            login_page.hold_on_password_eye()._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
         login_page._make_screenshot(with_hard_wait=True)
         with allure.step('Expected Result: Login and Password fields are underlined by red'):
-            assert all([login_page.is_login_field_underlined(),
-                        login_page.is_password_field_underlined()]), ('Login or/and Password fields aren\'t underlined '
-                                                                      'by red')
-        with allure.step(f'Expected Result: Error message "{ER.get_wrong_data_error_message(language)}" is displayed under '
-                         f'Password field'):
-            assert login_page.get_error_message() == ER.get_wrong_data_error_message(language)
+            assert all([login_page.is_login_field_underlined(), login_page.is_password_field_underlined()]), \
+                'Login or/and Password fields aren\'t underlined by red'
+        expected_error = ER.get_wrong_data_error_message(language)
+        with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
+            assert login_page.get_error_message() == expected_error, 'Wrong error message'
         with allure.step('Expected Result: Text inputted to Password field is selected'):
-            assert login_page.is_password_field_text_selected(conf.default_account_nonexistent_password)
+            assert login_page.is_password_field_text_selected(conf.default_account_nonexistent_password), \
+                'Text from password field isn\'t selected'
 
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-11', 'Login with nonexistent username and existent password')
@@ -107,23 +123,23 @@ class TestLoginPage:
     @pytest.mark.parametrize('language', ALL_LANGUAGES)
     def test_login_with_nonexistent_username(self, open_login_page, language, conf):
         login_page = open_login_page
-        with allure.step('Set Ukrainian language'):
+        with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
         with allure.step('Input existent account username and nonexistent password'):
             login_page.input_login(conf.default_account_nonexistent_login).input_password(conf.default_account_password)
-            login_page._make_screenshot()
+            login_page.hold_on_password_eye()._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
         login_page._make_screenshot(with_hard_wait=True)
         with allure.step('Expected Result: Login and Password fields are underlined by red'):
-            assert all([login_page.is_login_field_underlined(),
-                        login_page.is_password_field_underlined()]), ('Login or/and Password fields aren\'t underlined '
-                                                                      'by red')
-        with allure.step(f'Expected Result: Error message "{ER.get_wrong_data_error_message(language)}" is displayed under '
-                         f'Password field'):
-            assert login_page.get_error_message() == ER.get_wrong_data_error_message(language)
+            assert all([login_page.is_login_field_underlined(), login_page.is_password_field_underlined()]), \
+                'Login or/and Password fields aren\'t underlined by red'
+        expected_error = ER.get_wrong_data_error_message(language)
+        with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
+            assert login_page.get_error_message() == expected_error, 'Wrong error message'
         with allure.step('Expected Result: Text inputted to Password field is selected'):
-            assert login_page.is_password_field_text_selected(conf.default_account_password)
+            assert login_page.is_password_field_text_selected(conf.default_account_password), \
+                'Text from password field isn\'t selected'
 
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-12', 'Login with username and password of maximum allowed length')
@@ -217,11 +233,11 @@ class TestLoginPage:
     @pytest.mark.parametrize('language', ALL_LANGUAGES)
     def test_login_with_username_containing_only_spaces(self, open_login_page, conf, language):
         login_page = open_login_page
-        with allure.step(f'Set {language} language'):
+        with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
         username_to_input = conf.login_only_with_spaces
         with allure.step('Input username containing only spaces and any password'):
-            login_page.input_login(username_to_input).input_password(conf.default_account_password).\
+            login_page.input_login(username_to_input).input_password(conf.default_account_password). \
                 _make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
@@ -229,33 +245,10 @@ class TestLoginPage:
         with allure.step('Expected Result: Login field is underlined by red'):
             assert login_page.is_login_field_underlined(), 'Login field isn\'t underlined by red'
         expected_error = ER.get_empty_login_error_message(language)
-        with allure.step(f'Expected Result: Error message is displayed under Password field:'
-                         f' "{expected_error}"'):
+        with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
             assert login_page.get_error_message() == expected_error, 'Wrong error message'
         with allure.step('Expected Result: Login field is focused'):
             assert login_page.is_login_field_focused(), 'Login field isn\'t focused'
-
-    # @allure.suite('Login')
-    # @allure.testcase('https://app.qase.io/case/PF-17', 'Login with Public computer')
-    # @allure.severity('major')
-    # def test_login_with_public_computer(self, open_login_page, conf):
-    #     login_page = open_login_page
-    #     with allure.step('Input username and password'):
-    #         login_page.input_login(conf.default_account_login).input_password(conf.default_account_password)
-    #     with allure.step('Check "Public computer" checkbox and press "Continue" button'):
-    #         login_page.press_continue_button()
-    #         login_page._make_screenshot()
-    #     with allure.step('Close all browser windows and reopen one'):
-    #         cookies = login_page.driver.get_cookies()
-    #         login_page._close_window()
-    #         driver = DriverFactory.create_driver(driver_id=conf.browser_id)
-    #         driver.maximize_window()
-    #         driver.get(LOGIN_PAGE_URL)
-    #         driver.delete_all_cookies()
-    #         for cookie in cookies:
-    #             driver.add_cookie(cookie)
-    #         driver.get(LOGIN_PAGE_URL)
-    #         driver.quit()
 
     @allure.suite('Login form')
     @allure.testcase('https://app.qase.io/case/PF-20', 'Displaying of input field names')
@@ -264,11 +257,11 @@ class TestLoginPage:
         login_page = open_login_page
         with allure.step('Clear and unfocus Username and Password fields'):
             login_page.check_public_computer_checkbox()
-            with allure.step('Expected Result: Names are displayed as field placeholders'):
-                login_page._make_screenshot()
-                assert all([login_page.is_login_field_name_displayed_as_placeholder(),
-                            login_page.is_password_field_name_displayed_as_placeholder()
-                            ]), 'Login and/or Password fields aren\'t displayed as placeholders'
+        with allure.step('Expected Result: Names are displayed as field placeholders'):
+            login_page._make_screenshot()
+            assert all([login_page.is_login_field_name_displayed_as_placeholder(),
+                        login_page.is_password_field_name_displayed_as_placeholder()
+                        ]), 'Login and/or Password fields aren\'t displayed as placeholders'
         with allure.step('Focus on Username and Password fields'):
             login_page.focus_on_login_field()
             is_login_field_name_displayed_above_field = login_page.is_login_field_name_displayed_above_field()
@@ -276,17 +269,17 @@ class TestLoginPage:
             login_page.focus_on_password_field()
             is_password_field_name_displayed_above_field = login_page.is_password_field_name_displayed_above_field()
             login_page._make_screenshot('Focus on Password field')
-            with allure.step('Expected Result: Names appear above fields when focusing on them'):
-                assert all([is_login_field_name_displayed_above_field, is_password_field_name_displayed_above_field
-                            ]), 'Login and/or Password fields aren\'t displayed above fields'
+        with allure.step('Expected Result: Names appear above fields when focusing on them'):
+            assert all([is_login_field_name_displayed_above_field, is_password_field_name_displayed_above_field
+                        ]), 'Login and/or Password fields aren\'t displayed above fields'
         with allure.step('Input some data to Username and Password fields and unfocus them'):
             login_page.input_login(conf.default_account_login).input_password(conf.default_account_password
                                                                               ).check_public_computer_checkbox()
-            with allure.step('Expected Result: Names appear above fields when there is some data entered'):
-                login_page._make_screenshot()
-                assert all([login_page.is_login_field_name_displayed_above_field(),
-                            login_page.is_password_field_name_displayed_above_field()
-                            ]), 'Login and/or Password fields aren\'t displayed above fields'
+        with allure.step('Expected Result: Names appear above fields when there is some data entered'):
+            login_page._make_screenshot()
+            assert all([login_page.is_login_field_name_displayed_above_field(),
+                        login_page.is_password_field_name_displayed_above_field()
+                        ]), 'Login and/or Password fields aren\'t displayed above fields'
 
     @allure.suite('Login form')
     @allure.testcase('https://app.qase.io/case/PF-19', 'Input username and password of more than maximum'
@@ -298,24 +291,24 @@ class TestLoginPage:
             login_page.input_login(conf.more_than_maximum_length_login)
         with allure.step('Check inputted data'):
             expected_login = login_page._lslice_text(conf.more_than_maximum_length_login, MAXIMUM_LOGIN_LENGTH)
-            with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_LOGIN_LENGTH} characters to'
-                             f' Login field. Inputted value is: "{expected_login}"'):
-                login_page.select_inputted_login()._make_screenshot()
-                assert (login_page.get_inputted_login_length() ==
-                        MAXIMUM_LOGIN_LENGTH), f'Inputted more than {MAXIMUM_LOGIN_LENGTH} chars'
-                assert (login_page.get_inputted_login() ==
-                        expected_login), f'Inputted login isn\'t: "{expected_login}"'
+        with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_LOGIN_LENGTH} characters to'
+                         f' Login field. Inputted value is: "{expected_login}"'):
+            login_page.select_inputted_login()._make_screenshot()
+            assert (login_page.get_inputted_login_length() ==
+                    MAXIMUM_LOGIN_LENGTH), f'Inputted more than {MAXIMUM_LOGIN_LENGTH} chars'
+            assert (login_page.get_inputted_login() ==
+                    expected_login), f'Inputted login is wrong'
         with allure.step('Input password'):
             login_page.input_password(conf.more_than_maximum_length_password)
         with allure.step('Check inputted data'):
             expected_password = login_page._lslice_text(conf.more_than_maximum_length_password, MAXIMUM_PASSWORD_LENGTH)
-            with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_PASSWORD_LENGTH} characters to '
-                             f'Password field. Inputted value is: "{expected_password}"'):
-                login_page.hold_on_password_eye().select_inputted_password()._make_screenshot()
-                assert (login_page.get_inputted_password_length() ==
-                        MAXIMUM_PASSWORD_LENGTH), f'Inputted more than {MAXIMUM_PASSWORD_LENGTH} chars'
-                assert (login_page.get_inputted_password() ==
-                        expected_password), f'Inputted password isn\'t: "{expected_password}"'
+        with allure.step(f'Expected Result: Unable to enter more than {MAXIMUM_PASSWORD_LENGTH} characters to '
+                         f'Password field. Inputted value is: "{expected_password}"'):
+            login_page.hold_on_password_eye().select_inputted_password()._make_screenshot()
+            assert (login_page.get_inputted_password_length() ==
+                    MAXIMUM_PASSWORD_LENGTH), f'Inputted more than {MAXIMUM_PASSWORD_LENGTH} chars'
+            assert (login_page.get_inputted_password() ==
+                    expected_password), f'Inputted password is wrong'
 
     @allure.suite('Login form')
     @allure.testcase('https://app.qase.io/case/PF-24', 'Show password icon')
@@ -325,22 +318,22 @@ class TestLoginPage:
         with allure.step('Input some data to Password field'):
             login_page.input_password(conf.default_account_password)
             login_page._make_screenshot()
-            with allure.step('Expected Result: Password is hidden by default'):
-                assert login_page.is_password_hidden(), 'Password isn\'t hidden'
-            with allure.step('Expected Result: Icon eye is opened'):
-                assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
+        with allure.step('Expected Result: Password is hidden by default'):
+            assert login_page.is_password_hidden(), 'Password isn\'t hidden'
+        with allure.step('Expected Result: Icon eye is opened'):
+            assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
         with allure.step('Press and hold "Show password" icon'):
             login_page.hold_on_password_eye()._make_screenshot()
-            with allure.step('Expected Result: Password is displayed when holding on icon'):
-                assert login_page.is_password_visible(), 'Password isn\'t displayed'
-            with allure.step('Expected Result: Icon eye is closed'):
-                assert login_page.is_password_field_eye_closed(), 'Icon eye isn\'t closed'
+        with allure.step('Expected Result: Password is displayed when holding on icon'):
+            assert login_page.is_password_visible(), 'Password isn\'t displayed'
+        with allure.step('Expected Result: Icon eye is closed'):
+            assert login_page.is_password_field_eye_closed(), 'Icon eye isn\'t closed'
         with allure.step('Release "Show password" icon'):
             login_page.release_password_eye()._make_screenshot()
-            with allure.step('Expected Result: Password is hidden when not holding on icon'):
-                assert login_page.is_password_hidden(), 'Password isn\'t hidden'
-            with allure.step('Expected Result: Icon eye is opened'):
-                assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
+        with allure.step('Expected Result: Password is hidden when not holding on icon'):
+            assert login_page.is_password_hidden(), 'Password isn\'t hidden'
+        with allure.step('Expected Result: Icon eye is opened'):
+            assert login_page.is_password_field_eye_opened(), 'Icon eye isn\'t opened'
 
     @allure.suite('Login form')
     @allure.testcase('https://app.qase.io/case/PF-16', 'Continue button state')
@@ -354,21 +347,21 @@ class TestLoginPage:
         with allure.step('Leave Login and Password fields empty'):
             login_page.input_login(conf.blank_input, is_clear=True).input_password(conf.blank_input,
                                                                                    is_clear=True)._make_screenshot()
-            with allure.step('Expected Result: Continue button is disabled'):
-                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Expected Result: Continue button is disabled'):
+            assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
         with allure.step('Input any username and leave Password field empty'):
             login_page.input_login(random_login).input_password(conf.blank_input, is_clear=True)._make_screenshot()
-            with allure.step('Expected Result: Continue button is disabled'):
-                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Expected Result: Continue button is disabled'):
+            assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
         with allure.step('Input any password and leave Login field empty'):
             login_page.input_login(conf.blank_input, is_clear=True).input_password(random_password)._make_screenshot()
-            with allure.step('Expected Result: Continue button is disabled'):
-                assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
+        with allure.step('Expected Result: Continue button is disabled'):
+            assert not login_page.is_continue_button_enabled(), 'Button isn\'t disabled'
         with allure.step('Input any username and password'):
             login_page.input_login(random_login, is_clear=True).input_password(random_password,
                                                                                is_clear=True)._make_screenshot()
-            with allure.step('Expected Result: Continue button is enabled'):
-                assert login_page.is_continue_button_enabled(), 'Button isn\'t enabled'
+        with allure.step('Expected Result: Continue button is enabled'):
+            assert login_page.is_continue_button_enabled(), 'Button isn\'t enabled'
 
     @allure.suite('Login Form')
     @allure.testcase('https://app.qase.io/case/PF-25', 'Links correctness')
@@ -379,14 +372,34 @@ class TestLoginPage:
         is_sign_up_link_has_target_blank_attr = login_page.is_sign_up_link_has_target_blank_attr()
         with allure.step('Follow "Trouble signing in?" link'):
             login_page.press_trouble_sign_in_link()._make_screenshot(is_current_url_needed=True)
-            with allure.step('Expected Result: Link is opened in current tab'):
-                assert not is_trouble_sing_in_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
-            with allure.step(f'Expected Result: "Trouble signing in?" goes to {urls.ACCOUNT_RECOVERY_URL}'):
-                assert login_page._is_url_opened(urls.ACCOUNT_RECOVERY_URL), f'URL isn\'t {urls.ACCOUNT_RECOVERY_URL}'
+        with allure.step('Expected Result: Link is opened in current tab'):
+            assert not is_trouble_sing_in_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
+        with allure.step(f'Expected Result: "Trouble signing in?" goes to {urls.ACCOUNT_RECOVERY_URL}'):
+            assert login_page._is_url_opened(urls.ACCOUNT_RECOVERY_URL), f'URL is wrong'
         with allure.step('Return to Login Page and follow "Sign up" link'):
             login_page._back()
             login_page.press_sign_up_link()._make_screenshot(is_current_url_needed=True)
-            with allure.step('Expected Result: Link is opened in current tab'):
-                assert not is_sign_up_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
-            with allure.step(f'Expected Result: Sign up goes to {urls.SIGN_UP_PAGE_URL}'):
-                assert login_page._is_url_opened(urls.SIGN_UP_PAGE_URL), f'URL isn\'t {urls.SIGN_UP_PAGE_URL}'
+        with allure.step('Expected Result: Link is opened in current tab'):
+            assert not is_sign_up_link_has_target_blank_attr, 'Link has no "target=_blank" attribute'
+        with allure.step(f'Expected Result: Sign up goes to {urls.SIGN_UP_PAGE_URL}'):
+            assert login_page._is_url_opened(urls.SIGN_UP_PAGE_URL), f'URL is wrong'
+
+    @allure.suite('Animations')
+    @allure.testcase('https://app.qase.io/case/PF-29', 'Manual switching')
+    @allure.severity('normal')
+    def test_manual_switching(self, open_login_page):
+        login_page = open_login_page
+        animation_number = login_page._generate_random_number(2, 5)
+        with allure.step(f'Switch animation with random step in direct order (to {animation_number})'):
+            login_page.switch_animation(animation_number)._make_screenshot(with_hard_wait=True)
+        with allure.step(f'Expected Result: Active animation is {animation_number}'):
+            assert login_page.is_animation_active(animation_number), 'Active animation is wrong'
+        animation_number = login_page._generate_random_number(1, animation_number - 1)
+        with allure.step(f'Switch animation with random step in backward order (to {animation_number})'):
+            login_page.switch_animation(animation_number)._make_screenshot(with_hard_wait=True)
+        with allure.step(f'Expected Result: Active animation is {animation_number}'):
+            assert login_page.is_animation_active(animation_number), 'Active animation is wrong'
+        with allure.step(f'Switch animation to current (to {animation_number})'):
+            login_page.switch_animation(animation_number)._make_screenshot(with_hard_wait=True)
+        with allure.step(f'Expected Result: Active animation is {animation_number}'):
+            assert login_page.is_animation_active(animation_number), 'Active animation is wrong'

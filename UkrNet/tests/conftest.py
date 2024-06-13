@@ -23,7 +23,7 @@ def conf():
 @allure.title('Create webdriver')
 @pytest.fixture()
 def create_driver(conf):
-    # time.sleep(3)  # Using delay between requests not to be banned by urk.net
+    time.sleep(3)  # Using delay between requests not to be banned by urk.net
     driver = DriverFactory.create_driver(driver_id=conf.browser_id)
     driver.maximize_window()
     yield driver
@@ -38,6 +38,17 @@ def open_login_page(create_driver):
 
 
 @pytest.fixture()
+@allure.title('Open Inbox Page')
+def open_inbox_page(create_driver, open_login_page, conf):
+    login_page = open_login_page
+    login_page.login(conf.default_account_login, conf.default_account_password)
+    if login_page._is_url_opened(urls.INBOX_PAGE_URL):
+        return InboxPage(create_driver)
+
+@pytest.fixture()
 @allure.title('Create Inbox Page')
 def create_inbox_page(create_driver):
     return InboxPage(create_driver)
+
+
+
