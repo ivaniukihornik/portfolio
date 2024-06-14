@@ -1,6 +1,7 @@
 import random
 import string
 import time
+from typing import Literal
 
 import allure
 from selenium.common import TimeoutException
@@ -19,7 +20,7 @@ class BasePage:
         self.__description = (By.XPATH, '//meta[@name="description"]')
         self.actions = ActionChains(driver)
 
-    def __wait_until_element_located(self, locator, mode=''):
+    def __wait_until_element_located(self, locator, mode: Literal['default', 'fast'] = 'default'):
         """Waits for element to be present in DOM tree of page and returns it if it is or raises TimeoutException if it
         is not. Mode describes the amount of time to wait"""
         match mode:
@@ -36,7 +37,7 @@ class BasePage:
         """Waits for element to be clickable on page and returns it if it is or raises TimeoutException if it is not."""
         return self.__wait.until(EC.element_to_be_clickable(locator))
 
-    def __hard_wait(self, seconds):
+    def _hard_wait(self, seconds):
         time.sleep(seconds)
         return self
 
@@ -44,10 +45,19 @@ class BasePage:
         self.driver.get(url)
 
     def _reload_page(self):
-        self.__hard_wait(0.5).driver.refresh()
+        self._hard_wait(0.5).driver.refresh()
 
     def _back(self):
         self.driver.back()
+
+    def _switch_to_tab(self, tab: int):
+        """Switches to tab"""
+        self.driver.switch_to.window(self._get_window_handles()[tab - 1])
+
+    def _close_current_tab(self, is_switching_to_first_tab_needed=False):
+        self.driver.close()
+        if is_switching_to_first_tab_needed:
+            self._switch_to_tab(1)
 
     def _make_screenshot(self, name='Screenshot', is_current_url_needed=False, with_hard_wait=False):
         """Makes a screenshot of page current state for allure report. Can take arguments:
@@ -55,7 +65,7 @@ class BasePage:
            \n\t- is_current_url_needed: if current url is needed to be attached;
            \n\t- with_hard_wait: if some pause is needed before making a screenshot"""
         if with_hard_wait:
-            self.__hard_wait(0.5)
+            self._hard_wait(0.5)
         if is_current_url_needed:
             allure.attach(f"Current URL: {self._get_current_url()}", name="Current URL",
                           attachment_type=allure.attachment_type.TEXT)
@@ -105,6 +115,13 @@ class BasePage:
     def _get_current_url(self):
         return self.driver.current_url
 
+    def _get_window_handles(self):
+        return self.driver.window_handles
+
+    def _get_elements(self, locator):
+        self.__wait_until_element_visible(locator)
+        return self.driver.find_elements(*locator)
+
     def _get_text(self, locator):
         return self.__wait_until_element_visible(locator).text
 
@@ -127,7 +144,7 @@ class BasePage:
         except TimeoutException:
             return False
 
-    def _is_displayed(self, locator, mode=''):
+    def _is_displayed(self, locator, mode: Literal['default', 'fast'] = 'default'):
         try:
             return self.__wait_until_element_located(locator, mode).is_displayed()
         except TimeoutException:
@@ -144,8 +161,11 @@ class BasePage:
         focused_element = self.driver.switch_to.active_element
         return element == focused_element
 
-    def _is_target_blank_link(self, locator):
+    def _is_link_opened_in_new_tab(self, is_switching_to_new_tab_needed=False):
         try:
-            return self._get_attribute(locator, 'target') == '_blank'
+            self.__fast_wait.until(EC.number_of_windows_to_be(2))
+            if is_switching_to_new_tab_needed:
+                self._switch_to_tab(2)
+            return True
         except TimeoutException:
             return False

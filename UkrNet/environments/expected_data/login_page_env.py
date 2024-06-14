@@ -1,6 +1,3 @@
-DEFAULT_LANGUAGE = 'uk'
-
-
 def get_title(language):
     match language:
         case 'uk':
@@ -139,3 +136,18 @@ def get_empty_login_error_message(language):
             return 'Поле должно быть заполнено'
         case 'en':
             return 'You can’t leave this empty'
+
+
+def get_support_content():
+    return {
+        'MAIL': 'support@ukr.net',
+        'VODAFONE': '(050) 204-14-24',
+        'KYIVSTAR': '(096) 718-55-52',
+        'PHONE': '(044) 235-85-55'
+    }
+
+
+DEFAULT_LANGUAGE = 'uk'
+ANIMATIONS_DURATION = 7
+ALL_TEXT_ELEMENTS = get_expected_text(DEFAULT_LANGUAGE).keys()
+ALL_SUPPORT_CONTACTS = get_support_content().keys()

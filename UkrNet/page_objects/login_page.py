@@ -38,6 +38,7 @@ class LoginPage(BasePage):
 
     __error_message = (By.CSS_SELECTOR, 'p._1oZFLSZ_')
 
+    __animation = (By.CSS_SELECTOR, 'li._82nIdC0D')
     __animation_item_switcher = (By.CSS_SELECTOR, 'li._82nIdC0D:nth-child({})')
     __footer_of_animation = (By.CSS_SELECTOR, 'p._9AaSh-oS')
 
@@ -51,6 +52,19 @@ class LoginPage(BasePage):
     __sign_up_link = (By.CSS_SELECTOR, 'div._3GXVBC43>a:nth-child(2)')
 
     __support_title = (By.CSS_SELECTOR, 'h4._3qFvKK5H')
+
+    __support_mail_icon = (By.CSS_SELECTOR, 'li._1w0muvWF')
+    __support_mail_content = (By.CSS_SELECTOR, 'li._1w0muvWF > a')
+
+    __support_vodafone_icon = (By.CSS_SELECTOR, 'li._1y__-uai')
+    __support_vodafone_content = (By.CSS_SELECTOR, 'li._1y__-uai > a')
+
+    __support_kyivstar_icon = (By.CSS_SELECTOR, 'li._2I9ZLTFx')
+    __support_kyivstar_content = (By.CSS_SELECTOR, 'li._2I9ZLTFx > a')
+
+    __support_phone_icon = (By.CSS_SELECTOR, 'li._25jRRsf_')
+    __support_phone_content = (By.CSS_SELECTOR, 'li._25jRRsf_ > a')
+
     __privacy_policy_link = (By.CSS_SELECTOR, 'div._3ZKKngSa>a')
     __terms_of_service_link = (By.CSS_SELECTOR, 'div._1DEoOWjX>a')
 
@@ -95,6 +109,18 @@ class LoginPage(BasePage):
 
     def __get_support_title(self):
         return self._get_text(self.__support_title)
+
+    def __get_support_mail_content(self):
+        return self._get_text(self.__support_mail_content)
+
+    def __get_support_vodafone_content(self):
+        return self._get_text(self.__support_vodafone_content)
+
+    def __get_support_kyivstar_content(self):
+        return self._get_text(self.__support_kyivstar_content)
+
+    def __get_support_phone_content(self):
+        return self._get_text(self.__support_phone_content)
 
     def __get_privacy_policy_link_name(self):
         return self._get_text(self.__privacy_policy_link)
@@ -142,6 +168,12 @@ class LoginPage(BasePage):
     def press_sign_up_link(self):
         self._click(self.__sign_up_link)
         return self
+
+    def press_privacy_policy_link(self):
+        self._click(self.__privacy_policy_link)
+
+    def press_terms_of_service_link(self):
+        self._click(self.__terms_of_service_link)
 
     def put_login_inside_spaces(self, login):
         """Surrounds obtained login with random amount of spaces and returns the result string"""
@@ -244,6 +276,22 @@ class LoginPage(BasePage):
     def get_inputted_password_length(self):
         return len(self.get_inputted_password())
 
+    def get_animations_amount(self):
+        return len(self._get_elements(self.__animation))
+
+    def get_support_content(self, contact):
+        match contact:
+            case 'MAIL':
+                return self.__get_support_mail_content()
+            case 'VODAFONE':
+                return self.__get_support_vodafone_content()
+            case 'KYIVSTAR':
+                return self.__get_support_kyivstar_content()
+            case 'PHONE':
+                return self.__get_support_phone_content()
+            case _:
+                return None
+
     def is_login_field_underlined(self):
         return self._is_displayed(self.__login_field_underline)
 
@@ -289,12 +337,29 @@ class LoginPage(BasePage):
     def is_password_field_eye_closed(self):
         return '-mask' in self._get_attribute(self.__password_eye_state, 'xlink:href')
 
-    def is_trouble_sing_in_link_has_target_blank_attr(self):
-        return self._is_target_blank_link(self.__trouble_sign_in_link)
-
-    def is_sign_up_link_has_target_blank_attr(self):
-        return self._is_target_blank_link(self.__sign_up_link)
-
     def is_animation_active(self, animation_number):
         return '_3MsdXPEs' in self._get_attribute(
             (self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number)), 'class')
+
+    def is_auto_animation_switching_correct(self, animations_duration):
+        result = True
+        for animation in range(1, self.get_animations_amount() + 1):
+            self._make_screenshot(name=f'Animation {animation}')
+            if not self.is_animation_active(animation):
+                result = False
+                break
+            self._hard_wait(animations_duration)
+        return result
+
+    def is_support_contact_icon_displayed(self, contact):
+        match contact:
+            case 'MAIL':
+                return self._is_displayed(self.__support_mail_icon)
+            case 'VODAFONE':
+                return self._is_displayed(self.__support_vodafone_icon)
+            case 'KYIVSTAR':
+                return self._is_displayed(self.__support_kyivstar_icon)
+            case 'PHONE':
+                return self._is_displayed(self.__support_phone_icon)
+            case _:
+                return False

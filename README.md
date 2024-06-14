@@ -1,6 +1,6 @@
-1. Setup python 3.10.12
+1. Install python 3
 2. Clone repo
 3. Install requirements.txt
 4. Install allure
 5. Install docker
-6. Install xclip if linux user
+to serve report use command
