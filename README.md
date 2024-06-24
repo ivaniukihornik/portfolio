@@ -1,6 +1,6 @@
-In this portfolio I created, described and automated tests for https://accounts.ukr.net/login - using _python+pytest+selenium+allure+docker_.
+In this portfolio I created, described and automated tests for https://accounts.ukr.net/login using [_qase.io_](https://qase.io/) as test management system and _python+pytest+selenium+allure+docker_ as test automation framework.
 
-To view test repository send me your email to https://t.me/igor_telgram in order I'll give you invite link.
+**To view test repository and detected bugs send me your email to [my telegram](https://t.me/igor_telgram) to get invite.**
 
 **To launch tests and view test results perform the following steps:**
 1. Make sure that **python 3**, **git**, **pip** and **allure** installed in your system
