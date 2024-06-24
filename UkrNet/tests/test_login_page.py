@@ -43,19 +43,27 @@ class TestLoginPage:
             inbox_page._make_screenshot(is_current_url_needed=True)
             assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
 
-    @allure.suite('Page opening')
-    @allure.testcase('https://app.qase.io/case/PF-3', 'Title and Description')
+    @allure.suite('Page tags')
+    @allure.testcase('https://app.qase.io/case/PF-3', 'Page Title')
     @allure.severity('minor')
     @pytest.mark.parametrize('language', ALL_LANGUAGES)
-    def test_title_and_description(self, open_login_page, language):
+    def test_page_title(self, open_login_page, language):
         login_page = open_login_page
         with allure.step(f'Set language to "{language}" and reload the page'):
             login_page.set_language(language)._reload_page()
-            title = login_page._get_title()
-            description = login_page._get_description()
-        with (allure.step('Check Title and Description')):
-            assert all([title == ER.get_title(language), description == ER.get_description(language)]), \
-                'Wrong Title or/and Description'
+        with (allure.step('Check Title')):
+            assert login_page._get_title() == ER.get_title(language), 'Wrong Title'
+
+    @allure.suite('Page tags')
+    @allure.testcase('https://app.qase.io/case/PF-144', 'Page Description')
+    @allure.severity('minor')
+    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    def test_page_description(self, open_login_page, language):
+        login_page = open_login_page
+        with allure.step(f'Set language to "{language}" and reload the page'):
+            login_page.set_language(language)._reload_page()
+        with (allure.step('Check Description')):
+            assert login_page._get_description() == ER.get_description(language), 'Wrong Description'
 
     @allure.suite('Page layout')
     @allure.testcase('https://app.qase.io/case/PF-8', 'Text correctness')

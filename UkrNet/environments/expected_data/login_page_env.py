@@ -5,7 +5,7 @@ def get_title(language):
         case 'ru':
             return 'Почта @ ukr.net - украинская электронная почта • Создать емейл'
         case 'en':
-            return 'Mail @ ukr.net - ukrainian electronic mail • Create email'
+            return 'Mail @ ukr.net - Ukrainian electronic mail • Create email'
         case _:
             return 'Specified language is absent'
 
@@ -96,7 +96,7 @@ def get_expected_text(language):
                 'H2_ANIMATION_2': 'Average message delivery takes less than one second.',
                 'H1_ANIMATION_3': 'THE MOST POPULAR UKRAINIAN WEBMAIL SERVICE',
                 'H2_ANIMATION_3': '42,5% of Ukrainian e-mail users are using @UKR.NET.*',
-                'FOOTER_ANIMATION_3': '*According to Internet Audience Reseach by Opinion Software Media'
+                'FOOTER_ANIMATION_3': '*According to Internet Audience Research by Opinion Software Media'
                                   ' (InMind Opinion Media LLC), April 2019, n=5000.',
                 'H1_ANIMATION_4': 'UNLIMITED MAILBOX FOR FREE',
                 'H2_ANIMATION_4': 'Mailbox will never be full.',
