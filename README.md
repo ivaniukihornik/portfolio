@@ -2,7 +2,7 @@
 In this portfolio I created, described and automated tests for https://accounts.ukr.net/login using [_qase.io_](https://qase.io/) as test management system and _python+pytest+selenium+allure+docker_ as test automation framework.
 
 ### Test and defects repository
-To view test repository and detected bugs send your email to [my telegram](https://t.me/igor_telgram) to get invite to **qase.io**.
+To view test repository and detected bugs send your email to [my telegram](https://t.me/ivaniuk_qa) to get invite to **qase.io**.
 
 ### Launching tests in system
 **To launch tests and view test results in your system environment perform the following steps:**
