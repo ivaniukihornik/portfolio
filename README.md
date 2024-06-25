@@ -2,7 +2,7 @@
 In this portfolio I created, described and automated tests for https://accounts.ukr.net/login using [_qase.io_](https://qase.io/) as test management system and _python+pytest+selenium+allure+docker_ as test automation framework.
 
 ### Test and defects repository
-To view test repository and detected bugs send me your email to [my telegram](https://t.me/igor_telgram) to get invite.
+To view test repository and detected bugs send your email to [my telegram](https://t.me/igor_telgram) to get invite to **qase.io**.
 
 ### Launching tests in system
 **To launch tests and view test results in your system environment perform the following steps:**
@@ -21,17 +21,17 @@ To view test repository and detected bugs send me your email to [my telegram](ht
 1. Make sure that **docker** installed and launched with appropriate permissions
 2. Open terminal in any desired directory and clone repo using ```git clone git@github.com:ivaniukihornik/portfolio.git``` command
 3. Move to root repo directory
-4. Make sure that ```--headless``` mode is set in ```/UkrNet/tests/conftest.py``` file. To do it add argument ```is_headless=True``` when initializing ```driver``` object in ```create_driver``` fixture:
+4. Make sure that ```--headless``` mode is set to webdriver in ```/UkrNet/tests/conftest.py``` file. To do it add argument ```is_headless=True``` when initializing ```driver``` object in ```create_driver``` fixture:
 
 ```driver = DriverFactory.create_driver(driver_id=conf.browser_id, is_headless=True)```
 
-5. Build docker image using ```docker build -t <image_name>:<tag> .``` command. After successfully building you'll see messages like those:
+5. Build docker image using ```docker build -t <image_name>:<tag> .``` command. After successfully building you'll see messages:
 
-```Successfully built 031e24cac40d```
+```Successfully built <build hash>```
 
-```Successfully tagged test_image1:latest```
+```Successfully tagged <image_name>:<tag>```
 
-6. Run docker container using ```docker run --privileged -it <image_name>:<tag>``` command. After successfully starting your user'll be like ```tester@9e02e5a09033:/project$```
-7. Launch tests using ```pytest``` command. After all tests are finished you`ll see message like this:
+6. Run docker container using ```docker run --privileged -it <image_name>:<tag>``` command. After successfully starting your user'll be **tester**. E.g.: ```tester@9e02e5a09033:/project$```
+7. Launch tests in container using ```pytest``` command. After all tests are finished you`ll see message like this:
 
 ```===================================== 105 passed, 4 skipped in 1627.68s (0:27:07) =====================================```
