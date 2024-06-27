@@ -20,7 +20,7 @@ class TestLoginPage:
         with allure.step('Open Login Page'):
             login_page = open_login_page
             default_language = login_page.get_selected_language()
-            login_page._make_screenshot()
+        login_page._make_screenshot()
         with allure.step(f'Expected Result: Default language is {ER.DEFAULT_LANGUAGE}'):
             assert ER.DEFAULT_LANGUAGE == default_language, 'default language is incorrect'
         current_url = login_page._get_current_url()
