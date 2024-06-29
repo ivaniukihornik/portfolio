@@ -6,7 +6,7 @@ To view test repository and detected bugs send your email to [my telegram](https
 
 ### Launching tests in system
 **To launch tests and view test results in your system environment perform the following steps:**
-1. Make sure that **python 3**, **git**, **pip** and **allure** installed in your system
+1. Make sure that **python 3**, **java**, **git**, **pip** and **allure** installed in your system
 2. Open terminal in any desired directory and clone repo using ```git clone git@github.com:ivaniukihornik/portfolio.git``` command
 3. Move to root repo directory
 4. Install required packages from _requirements.txt_ using ```pip install -r requirements.txt```
