@@ -3,12 +3,11 @@ import pytest
 
 from UkrNet.environments import urls
 
-from UkrNet.environments.expected_data import login_page_env as ER
+from UkrNet.environments.expected_data.login_page_env import LoginPageEnv
 from UkrNet.constants import MAXIMUM_LOGIN_LENGTH, MAXIMUM_PASSWORD_LENGTH, MINIMUM_LOGIN_LENGTH, \
     MINIMUM_PASSWORD_LENGTH
-from UkrNet.environments.expected_data.login_page_env import ANIMATIONS_DURATION, ALL_TEXT_ELEMENTS, \
-    ALL_SUPPORT_CONTACTS
-from UkrNet.environments.languages import ALL_LANGUAGES
+
+ER = LoginPageEnv()
 
 
 @allure.parent_suite('Login Page')
@@ -46,7 +45,7 @@ class TestLoginPage:
     @allure.suite('Page tags')
     @allure.testcase('https://app.qase.io/case/PF-3', 'Page Title')
     @allure.severity('minor')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_page_title(self, open_login_page, language):
         login_page = open_login_page
         with allure.step(f'Set language to "{language}" and reload the page'):
@@ -57,7 +56,7 @@ class TestLoginPage:
     @allure.suite('Page tags')
     @allure.testcase('https://app.qase.io/case/PF-144', 'Page Description')
     @allure.severity('minor')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_page_description(self, open_login_page, language):
         login_page = open_login_page
         with allure.step(f'Set language to "{language}" and reload the page'):
@@ -68,8 +67,8 @@ class TestLoginPage:
     @allure.suite('Page layout')
     @allure.testcase('https://app.qase.io/case/PF-8', 'Text correctness')
     @allure.severity('minor')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
-    @pytest.mark.parametrize('element', ALL_TEXT_ELEMENTS)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
+    @pytest.mark.parametrize('element', ER.get_all_text_elements())
     def test_text_correctness(self, open_login_page, language, element):
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
@@ -99,7 +98,7 @@ class TestLoginPage:
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-10', 'Login with existent username and nonexistent password')
     @allure.severity('critical')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_login_with_nonexistent_password(self, open_login_page, language, conf):
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
@@ -123,7 +122,7 @@ class TestLoginPage:
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-11', 'Login with nonexistent username and existent password')
     @allure.severity('critical')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_login_with_nonexistent_username(self, open_login_page, language, conf):
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
@@ -233,7 +232,7 @@ class TestLoginPage:
     @allure.suite('Login')
     @allure.testcase('https://app.qase.io/case/PF-90', 'Login with username containing only spaces')
     @allure.severity('minor')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_login_with_username_containing_only_spaces(self, open_login_page, conf, language):
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
@@ -390,8 +389,8 @@ class TestLoginPage:
         login_page = open_login_page
         with allure.step('Check automated switching of animations'):
             with allure.step(f'Expected Result: Animations change automatically in sequential order with timeout '
-                             f'{ANIMATIONS_DURATION} seconds'):
-                assert login_page.is_auto_animation_switching_correct(ANIMATIONS_DURATION), \
+                             f'{ER.ANIMATIONS_DURATION} seconds'):
+                assert login_page.is_auto_animation_switching_correct(ER.ANIMATIONS_DURATION), \
                     'Automated switching doesn\'t work correctly'
             with allure.step('Expected Result: Cycle repeats after finishing of the last animation'):
                 login_page._make_screenshot()
@@ -420,7 +419,7 @@ class TestLoginPage:
     @allure.suite('Footer')
     @allure.testcase('https://app.qase.io/case/PF-31', 'Contacts content')
     @allure.severity('normal')
-    @pytest.mark.parametrize('contact', ALL_SUPPORT_CONTACTS)
+    @pytest.mark.parametrize('contact', ER.get_all_support_contacts())
     def test_contacts_content(self, open_login_page, contact):
         login_page = open_login_page
         with allure.step(f'Check content of {contact} contact'):
@@ -435,7 +434,7 @@ class TestLoginPage:
     @allure.suite('Footer')
     @allure.testcase('https://app.qase.io/case/PF-32', 'Links to agreements')
     @allure.severity('minor')
-    @pytest.mark.parametrize('language', ALL_LANGUAGES)
+    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
     def test_links_to_agreements(self, open_login_page, language):
         login_page = open_login_page
         with allure.step(f'Set language to "{language}" and follow "Privacy Policy" link'):

@@ -8,25 +8,24 @@ class LoginPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
-    __language_button = (By.XPATH, '//button[@data-lang="{}"]')
-    __selected_language = (By.XPATH, '//button[contains(@class, "_30cp__sx")]')
+    __selected_language = (By.CSS_SELECTOR, 'button._15CzUyms')
+    __language_button = __selected_language
+    __language_to_select = (By.XPATH, '//button[@class="Ii4YrhIX"][text()="{}"]')
 
-    __h1 = (By.CSS_SELECTOR, 'div._13Fm_HHI:nth-child({})>h1')
-    __h2 = (By.CSS_SELECTOR, 'div._13Fm_HHI:nth-child({})>h2')
-
-    __login_form_title = (By.CSS_SELECTOR, 'h2._1azB1YgZ')
+    __login_form_title = (By.CSS_SELECTOR, 'h2.DhiDxejH')
 
     __login_field = (By.XPATH, '//input[@name="login"]')
-    __login_field_name = (__login_field[0], f'{__login_field[1]}/ancestor::label/p')
+    __login_field_name = (__login_field[0], f'{__login_field[1]}/ancestor::*[contains(@class, "mJOT30ua")]//label')
     __login_field_name_pos_focus_modifier = (__login_field[0], f'{__login_field[1]}[contains(@class, "focus-visible")]')
     __login_field_name_pos_input_modifier = (__login_field_name[0], f'{__login_field_name[1]}[contains(@class,'
                                                                     f' "_3aAVn0Us")]')
     __login_field_underline = (__login_field[0], f'{__login_field[1]}/ancestor::label/div[contains(@class,'
                                                  f' "ei5QaAJ0")]')
-    __email_domain = (By.CSS_SELECTOR, 'span._38_4DkC1')
+    __email_domain = (By.CSS_SELECTOR, 'span._2wDvNoc7')
 
     __password_field = (By.XPATH, '//input[@name="password"]')
-    __password_field_name = (__password_field[0], f'{__password_field[1]}/ancestor::label/p')
+    __password_field_name = (__password_field[0], f'{__password_field[1]}/ancestor::*[contains(@class,'
+                                                  f' "mJOT30ua")]//label')
     __password_field_name_pos_focus_modifier = (__password_field[0], f'{__password_field[1]}[contains(@class,'
                                                                      f' "focus-visible")]')
     __password_field_name_pos_input_modifier = (__password_field_name[0], f'{__password_field_name[1]}[contains(@class,'
@@ -38,20 +37,22 @@ class LoginPage(BasePage):
 
     __error_message = (By.CSS_SELECTOR, 'p._1oZFLSZ_')
 
-    __animation = (By.CSS_SELECTOR, 'li._82nIdC0D')
-    __animation_item_switcher = (By.CSS_SELECTOR, 'li._82nIdC0D:nth-child({})')
-    __footer_of_animation = (By.CSS_SELECTOR, 'p._9AaSh-oS')
+    __animation = (By.CSS_SELECTOR, 'button._3ZaS2DCq')
+    __animation_item_switcher = (By.XPATH, '//button[contains(@class, "_3ZaS2DCq")][@data-index={}]')
+    __animation_title = (By.XPATH, '//*[contains(@class, "zMtDsG7W")][{}]/h2')
+    __animation_paragraph = (By.XPATH, '//*[contains(@class, "zMtDsG7W")][{}]/p')
 
     __public_computer_checkbox = (By.XPATH, '//input[@type="checkbox"]/ancestor::label')
-    __public_computer_checkbox_name = (By.CSS_SELECTOR, 'div._2D_WbGHd')
+    __public_computer_checkbox_name = (By.CSS_SELECTOR, 'div._30hjWeHY')
 
     __continue_button = (By.XPATH, '//button[@type="submit"]')
-    __continue_button_name = (__continue_button[0], f'{__continue_button[1]}/div')
 
-    __trouble_sign_in_link = (By.CSS_SELECTOR, 'div._3GXVBC43>a:nth-child(1)')
-    __sign_up_link = (By.CSS_SELECTOR, 'div._3GXVBC43>a:nth-child(2)')
+    __trouble_sign_in_link = (By.CSS_SELECTOR, 'a._3PrwZZRJ:nth-child(1)')
+    __sign_up_link = (By.CSS_SELECTOR, 'a._3PrwZZRJ:nth-child(2)')
 
-    __support_title = (By.CSS_SELECTOR, 'h4._3qFvKK5H')
+    __apps_title = (By.CSS_SELECTOR, 'p._1zLZRANz')
+
+    __support_title = (By.CSS_SELECTOR, 'div.WO9yyhGJ')
 
     __support_mail_icon = (By.CSS_SELECTOR, 'li._1w0muvWF')
     __support_mail_content = (By.CSS_SELECTOR, 'li._1w0muvWF > a')
@@ -65,23 +66,21 @@ class LoginPage(BasePage):
     __support_phone_icon = (By.CSS_SELECTOR, 'li._25jRRsf_')
     __support_phone_content = (By.CSS_SELECTOR, 'li._25jRRsf_ > a')
 
-    __privacy_policy_link = (By.CSS_SELECTOR, 'div._3ZKKngSa>a')
-    __terms_of_service_link = (By.CSS_SELECTOR, 'div._1DEoOWjX>a')
+    __privacy_policy_link = (By.XPATH, '//*[@class="_31Ul8LLC"][1]/a')
+    __terms_of_service_link = (By.XPATH, '//*[@class="_31Ul8LLC"][2]/a')
 
     def __get_language_button_name(self, language):
         return self._get_text((self.__language_button[0], self.__language_button[1].format(language)))
 
-    def __get_h1(self, animation_number):
-        """Returns <h1> header of animation by animation number"""
-        return self.switch_animation(animation_number)._get_text((self.__h1[0], self.__h1[1].format(animation_number)))
+    def __get_animation_title(self, animation_number: int) -> str:
+        """Returns <h2> header content of animation by animation number"""
+        return self.switch_animation(animation_number)._get_text(
+            (self.__animation_title[0], self.__animation_title[1].format(animation_number)))
 
-    def __get_h2(self, animation_number):
-        """Returns <h2> header of animation by animation number"""
-        return self.switch_animation(animation_number)._get_text((self.__h2[0], self.__h2[1].format(animation_number)))
-
-    def __get_footer_of_animation(self, animation_number):
-        """Returns footer of animation by animation number"""
-        return self.switch_animation(animation_number)._get_text(self.__footer_of_animation)
+    def __get_animation_paragraph(self, animation_number: int) -> str:
+        """Returns <p> content of animation by animation number"""
+        return self.switch_animation(animation_number)._get_text(
+            (self.__animation_paragraph[0], self.__animation_paragraph[1].format(animation_number)))
 
     def __get_login_form_title(self):
         return self._get_text(self.__login_form_title)
@@ -99,13 +98,16 @@ class LoginPage(BasePage):
         return self._get_text(self.__public_computer_checkbox_name)
 
     def __get_continue_button_name(self):
-        return self._get_text(self.__continue_button_name)
+        return self._get_text(self.__continue_button)
 
     def __get_trouble_sign_in_link_name(self):
         return self._get_text(self.__trouble_sign_in_link)
 
     def __get_sign_up_link_name(self):
         return self._get_text(self.__sign_up_link)
+
+    def __get_apps_title(self):
+        return self._get_text(self.__apps_title)
 
     def __get_support_title(self):
         return self._get_text(self.__support_title)
@@ -130,11 +132,13 @@ class LoginPage(BasePage):
 
     def switch_animation(self, animation_number: int):
         """Switches the animation to obtained number"""
-        self._click((self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number)))
+        self._click((self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number - 1)))
         return self
 
-    def set_language(self, language):
-        self._click((self.__language_button[0], self.__language_button[1].format(language)))
+    def set_language(self, language: str):
+        self._scroll_to_element(self.__language_button)
+        self._click(self.__language_button)
+        self._click((self.__language_to_select[0], self.__language_to_select[1].format(language)))
         return self
 
     def focus_on_login_field(self):
@@ -203,39 +207,14 @@ class LoginPage(BasePage):
         return self
 
     def get_selected_language(self):
-        return self._get_attribute(locator=self.__selected_language, attribute='data-lang')
+        return self._get_text(self.__selected_language)
 
-    def get_text_of_element(self, element):
+    def get_animations_amount(self):
+        return len(self._get_elements(self.__animation))
+
+    def get_text_of_element(self, element: str) -> str:
         """Returns the text of element by specific element name"""
         match element:
-            case 'UK_LANGUAGE_BUTTON_NAME':
-                return self.__get_language_button_name('uk')
-            case 'RU_LANGUAGE_BUTTON_NAME':
-                return self.__get_language_button_name('ru')
-            case 'EN_LANGUAGE_BUTTON_NAME':
-                return self.__get_language_button_name('en')
-            case 'H1_ANIMATION_1':
-                return self.__get_h1(1)
-            case 'H2_ANIMATION_1':
-                return self.__get_h2(1)
-            case 'H1_ANIMATION_2':
-                return self.__get_h1(2)
-            case 'H2_ANIMATION_2':
-                return self.__get_h2(2)
-            case 'H1_ANIMATION_3':
-                return self.__get_h1(3)
-            case 'H2_ANIMATION_3':
-                return self.__get_h2(3)
-            case 'FOOTER_ANIMATION_3':
-                return self.__get_footer_of_animation(3)
-            case 'H1_ANIMATION_4':
-                return self.__get_h1(4)
-            case 'H2_ANIMATION_4':
-                return self.__get_h2(4)
-            case 'H1_ANIMATION_5':
-                return self.__get_h1(5)
-            case 'H2_ANIMATION_5':
-                return self.__get_h2(5)
             case 'LOGIN_FORM_TITLE':
                 return self.__get_login_form_title()
             case 'LOGIN_FIELD_NAME':
@@ -252,6 +231,8 @@ class LoginPage(BasePage):
                 return self.__get_trouble_sign_in_link_name()
             case 'SIGN_UP_LINK_NAME':
                 return self.__get_sign_up_link_name()
+            case 'APPS_TITLE':
+                return self.__get_apps_title()
             case 'SUPPORT_TITLE':
                 return self.__get_support_title()
             case 'PRIVACY_POLICY_LINK_NAME':
@@ -259,7 +240,14 @@ class LoginPage(BasePage):
             case 'TERMS_OF_SERVICE_LINK_NAME':
                 return self.__get_terms_of_service_link_name()
             case _:
-                return None
+                if 'ANIMATION' in element:
+                    for animation_number in range(1, self.get_animations_amount() + 1):
+                        if element == f'ANIMATION_{animation_number}_TITLE':
+                            return self.__get_animation_title(animation_number)
+                        elif element == f'ANIMATION_{animation_number}_PARAGRAPH':
+                            return self.__get_animation_paragraph(animation_number)
+                else:
+                    return 'Specified element is absent'
 
     def get_error_message(self):
         return self._get_text(self.__error_message)
@@ -275,9 +263,6 @@ class LoginPage(BasePage):
 
     def get_inputted_password_length(self):
         return len(self.get_inputted_password())
-
-    def get_animations_amount(self):
-        return len(self._get_elements(self.__animation))
 
     def get_support_content(self, contact):
         match contact:
@@ -338,8 +323,9 @@ class LoginPage(BasePage):
         return '-mask' in self._get_attribute(self.__password_eye_state, 'xlink:href')
 
     def is_animation_active(self, animation_number):
-        return '_3MsdXPEs' in self._get_attribute(
-            (self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number)), 'class')
+        return '_3frXUy4p' in self._get_attribute(
+            (self.__animation_item_switcher[0], self.__animation_item_switcher[1].format(animation_number - 1)),
+            'class')
 
     def is_auto_animation_switching_correct(self, animations_duration):
         result = True

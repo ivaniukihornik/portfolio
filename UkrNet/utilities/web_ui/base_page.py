@@ -92,6 +92,9 @@ class BasePage:
         self.actions.release(self.__wait_until_element_clickable(locator))
         self.actions.perform()
 
+    def _scroll_to_element(self, locator: tuple):
+        self.actions.scroll_to_element(self.__wait_until_element_visible(locator)).perform()
+
     def _select_text(self, locator):
         self.__wait_until_element_clickable(locator).send_keys(Keys.CONTROL + 'a')
 
