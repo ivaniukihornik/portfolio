@@ -80,173 +80,76 @@ class TestLoginPage:
             assert expected_text == actual_text, f'Text of {element} element is incorrect'
 
     @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-9', 'Login with existent credentials')
-    @allure.severity('critical')
-    def test_login_with_existent_credentials(self, open_login_page, create_inbox_page, conf):
+    @allure.sub_suite('Login with valid credentials')
+    def test_login_with_valid_creds(self, open_login_page, valid_login_test_data,
+                                    get_data_driven_test_cases, create_inbox_page):
+        username, password, test_explanation, mark, test_case_number, severity = valid_login_test_data
+        test_case_url, test_case_title = get_data_driven_test_cases.get(test_case_number)
+        allure.dynamic.testcase(test_case_url, test_case_title)
+        allure.dynamic.severity(severity)
+
         login_page = open_login_page
-        with allure.step('Input username and password'):
-            login_page.input_login(conf.default_account_login).input_password(conf.default_account_password)
-            login_page._make_screenshot()
+        with allure.step(f'Input {test_explanation}'):
+            login_page.input_login(username).input_password(password)
+            login_page.hold_on_password_eye()._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
         with allure.step('User\'s inbox is opened'):
             inbox_page = create_inbox_page
             assert login_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
             inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
+            assert inbox_page.get_username() in username, 'Not user\'s inbox'
 
     @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-10', 'Login with existent username and nonexistent password')
-    @allure.severity('critical')
+    @allure.sub_suite('Login with invalid credentials')
     @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
-    def test_login_with_nonexistent_password(self, open_login_page, language, conf):
+    def test_login_with_nonexistent_creds(self, open_login_page, language, nonexistent_login_test_data,
+                                          get_data_driven_test_cases):
+        username, password, test_explanation, mark, test_case_number, severity = nonexistent_login_test_data
+        test_case_url, test_case_title = get_data_driven_test_cases.get(test_case_number)
+        allure.dynamic.testcase(test_case_url, test_case_title)
+        allure.dynamic.severity(severity)
+
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
-        with allure.step('Input existent account username and nonexistent password'):
-            login_page.input_login(conf.default_account_login).input_password(conf.default_account_nonexistent_password)
+        with allure.step(f'Input {test_explanation}'):
+            login_page.input_login(username).input_password(password)
             login_page.hold_on_password_eye()._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
         login_page._make_screenshot(with_hard_wait=True)
-        with allure.step('Expected Result: Login and Password fields are underlined by red'):
+        with allure.step('Expected Result: Login and Password fields are underlined by orange'):
             assert all([login_page.is_login_field_underlined(), login_page.is_password_field_underlined()]), \
-                'Login or/and Password fields aren\'t underlined by red'
-        expected_error = ER.get_wrong_data_error_message(language)
+                'Login or/and Password field(s) isn\'t/aren\'t underlined by orange'
+        expected_error = ER.get_wrong_data_error_message(language, mark)
         with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
             assert expected_error == login_page.get_error_message(), 'Wrong error message'
         with allure.step('Expected Result: Text inputted to Password field is selected'):
-            assert login_page.is_password_field_text_selected(conf.default_account_nonexistent_password), \
+            assert login_page.is_password_field_text_selected(password), \
                 'Text from password field isn\'t selected'
 
     @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-11', 'Login with nonexistent username and existent password')
-    @allure.severity('critical')
+    @allure.sub_suite('Login with invalid credentials')
     @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
-    def test_login_with_nonexistent_username(self, open_login_page, language, conf):
+    def test_login_with_username_containing_only_spaces(self, open_login_page, language, only_spaces_login_test_data,
+                                                        get_data_driven_test_cases):
+        username, password, test_explanation, mark, test_case_number, severity = only_spaces_login_test_data
+        test_case_url, test_case_title = get_data_driven_test_cases.get(test_case_number)
+        allure.dynamic.testcase(test_case_url, test_case_title)
+        allure.dynamic.severity(severity)
+
         login_page = open_login_page
         with allure.step(f'Set "{language}" language'):
             login_page.set_language(language)
-        with allure.step('Input nonexistent account username and existent password'):
-            login_page.input_login(conf.default_account_nonexistent_login).input_password(conf.default_account_password)
-            login_page.hold_on_password_eye()._make_screenshot()
+        with allure.step(f'Input {test_explanation}'):
+            login_page.input_login(username).input_password(password)._make_screenshot()
         with allure.step('Press Continue button'):
             login_page.press_continue_button()
         login_page._make_screenshot(with_hard_wait=True)
-        with allure.step('Expected Result: Login and Password fields are underlined by red'):
-            assert all([login_page.is_login_field_underlined(), login_page.is_password_field_underlined()]), \
-                'Login or/and Password fields aren\'t underlined by red'
-        expected_error = ER.get_wrong_data_error_message(language)
-        with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
-            assert expected_error == login_page.get_error_message(), 'Wrong error message'
-        with allure.step('Expected Result: Text inputted to Password field is selected'):
-            assert login_page.is_password_field_text_selected(conf.default_account_password), \
-                'Text from password field isn\'t selected'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-12', 'Login with username and password of maximum allowed length')
-    @allure.severity('critical')
-    @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_maximum_allowed_length_credentials(self, open_login_page, create_inbox_page, conf):
-        login_page = open_login_page
-        with allure.step('Input username and password'):
-            login_page.input_login(conf.maximum_length_login).input_password(conf.maximum_length_password)
-            login_page._make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        with allure.step('User\'s inbox is opened'):
-            inbox_page = create_inbox_page
-            assert login_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-13', 'Login with username and password of minimum allowed length')
-    @allure.severity('critical')
-    @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_minimum_allowed_length_credentials(self, open_login_page, create_inbox_page, conf):
-        login_page = open_login_page
-        with allure.step('Input username and password'):
-            login_page.input_login(conf.minimum_length_login).input_password(conf.minimum_length_password)
-            login_page._make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        with allure.step('User\'s inbox is opened'):
-            inbox_page = create_inbox_page
-            assert login_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-14', 'Login with username containing allowed symbols')
-    @allure.severity('critical')
-    @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_username_containing_allowed_symbols(self, open_login_page, create_inbox_page, conf):
-        login_page = open_login_page
-        with allure.step('Input username and password'):
-            login_page.input_login(conf.login_with_allowed_symbols).input_password(
-                conf.password_for_login_with_allowed_symbols)
-            login_page._make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        with allure.step('User\'s inbox is opened'):
-            inbox_page = create_inbox_page
-            assert login_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-15', 'Login with password containing special symbols')
-    @allure.severity('critical')
-    @pytest.mark.skip(reason='no registered account with needed credentials')
-    def test_login_with_password_containing_special_symbols(self, open_login_page, create_inbox_page, conf):
-        login_page = open_login_page
-        with allure.step('Input username and password'):
-            login_page.input_login(conf.login_for_password_with_special_symbols).input_password(
-                conf.password_with_special_symbols)
-            login_page._make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        with allure.step('User\'s inbox is opened'):
-            inbox_page = create_inbox_page
-            assert login_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-91', 'Login with username beginning and ending with spaces')
-    @allure.severity('minor')
-    def test_login_with_username_inside_spaces(self, open_login_page, create_inbox_page, conf):
-        login_page = open_login_page
-        login = login_page.put_login_inside_spaces(conf.default_account_login)
-        with allure.step('Input username and password'):
-            login_page.input_login(login).input_password(conf.default_account_password)._make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        with allure.step('Expected Result: All side spaces are trimmed on login. User\'s inbox is opened'):
-            inbox_page = create_inbox_page
-            assert inbox_page._is_url_opened(urls.INBOX_PAGE_URL), 'Inbox isn\'t opened'
-            inbox_page._make_screenshot(is_current_url_needed=True)
-            assert conf.default_account_email == inbox_page.get_user_email(), 'Not user\'s inbox'
-
-    @allure.suite('Login')
-    @allure.testcase('https://app.qase.io/case/PF-90', 'Login with username containing only spaces')
-    @allure.severity('minor')
-    @pytest.mark.parametrize('language', ER.ALL_LANGUAGES)
-    def test_login_with_username_containing_only_spaces(self, open_login_page, conf, language):
-        login_page = open_login_page
-        with allure.step(f'Set "{language}" language'):
-            login_page.set_language(language)
-        username_to_input = conf.login_only_with_spaces
-        with allure.step('Input username containing only spaces and any password'):
-            login_page.input_login(username_to_input).input_password(conf.default_account_password). \
-                _make_screenshot()
-        with allure.step('Press Continue button'):
-            login_page.press_continue_button()
-        login_page._make_screenshot(with_hard_wait=True)
-        with allure.step('Expected Result: Login field is underlined by red'):
-            assert login_page.is_login_field_underlined(), 'Login field isn\'t underlined by red'
-        expected_error = ER.get_empty_login_error_message(language)
+        with allure.step('Expected Result: Login field is underlined by orange'):
+            assert login_page.is_login_field_underlined(), 'Login field isn\'t underlined by orange'
+        expected_error = ER.get_wrong_data_error_message(language, mark)
         with allure.step(f'Expected Result: Error message "{expected_error}" is displayed under Password field'):
             assert expected_error == login_page.get_error_message(), 'Wrong error message'
         with allure.step('Expected Result: Login field is focused'):

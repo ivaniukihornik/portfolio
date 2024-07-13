@@ -1,0 +1,6 @@
+username,password,explanation,mark,test_case_number,test_case_severity
+ivaniuk_test,pJgYa_UW.4_wD.S,registered username and password,valid_data,9,critical
+   ivaniuk_test  ,pJgYa_UW.4_wD.S,username beginning and ending with spaces,valid_data,91,minor
+ivaniuk_test,uN3x1st_inG,existent account username and nonexistent password,nonexistent_data,10,critical
+ivaniuk_test_nonexistent,pJgYa_UW.4_wD.S,nonexistent username and existent password,nonexistent_data,11,critical
+     ,pJgYa_UW.4_wD.S,username containing only spaces and any password,only_spaces,90,minor

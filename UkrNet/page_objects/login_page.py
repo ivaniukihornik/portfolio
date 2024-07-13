@@ -19,8 +19,7 @@ class LoginPage(BasePage):
     __login_field_name_pos_focus_modifier = (__login_field[0], f'{__login_field[1]}[contains(@class, "focus-visible")]')
     __login_field_name_pos_input_modifier = (__login_field_name[0], f'{__login_field_name[1]}[contains(@class,'
                                                                     f' "_3aAVn0Us")]')
-    __login_field_underline = (__login_field[0], f'{__login_field[1]}/ancestor::label/div[contains(@class,'
-                                                 f' "ei5QaAJ0")]')
+    __login_field_underline = (__login_field[0], f'{__login_field[1]}/ancestor::*[contains(@class, "_3zE00K5Z")]')
     __email_domain = (By.CSS_SELECTOR, 'span._2wDvNoc7')
 
     __password_field = (By.XPATH, '//input[@name="password"]')
@@ -30,12 +29,12 @@ class LoginPage(BasePage):
                                                                      f' "focus-visible")]')
     __password_field_name_pos_input_modifier = (__password_field_name[0], f'{__password_field_name[1]}[contains(@class,'
                                                                           f' "_3aAVn0Us")]')
-    __password_field_underline = (__password_field[0], f'{__password_field[1]}/ancestor::label/div[contains(@class,'
-                                                       f' "ei5QaAJ0")]')
+    __password_field_underline = (__password_field[0], f'{__password_field[1]}//ancestor::*[contains(@class,'
+                                                       f' "_3zE00K5Z")]')
     __password_eye = (__password_field[0], f'{__password_field[1]}/ancestor::div/button')
     __password_eye_state = (__password_eye[0], f'{__password_eye[1]}//*[name()="use"]')
 
-    __error_message = (By.CSS_SELECTOR, 'p._1oZFLSZ_')
+    __error_message = (By.CSS_SELECTOR, 'p._3ctepfDF')
 
     __animation = (By.CSS_SELECTOR, 'button._3ZaS2DCq')
     __animation_item_switcher = (By.XPATH, '//button[contains(@class, "_3ZaS2DCq")][@data-index={}]')
@@ -139,6 +138,7 @@ class LoginPage(BasePage):
         self._scroll_to_element(self.__language_button)
         self._click(self.__language_button)
         self._click((self.__language_to_select[0], self.__language_to_select[1].format(language)))
+        self._scroll_to_page_position('top')
         return self
 
     def focus_on_login_field(self):

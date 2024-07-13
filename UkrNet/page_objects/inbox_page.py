@@ -9,6 +9,6 @@ class InboxPage(BasePage):
 
     __user_email = (By.CSS_SELECTOR, 'p.login-button__user')
 
-    def get_user_email(self):
-        return self._get_text(self.__user_email)
+    def get_username(self):
+        return self._get_text(self.__user_email).split('@')[0]
 

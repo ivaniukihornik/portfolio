@@ -154,23 +154,23 @@ class LoginPageEnv:
             case _:
                 return {}
 
-    def get_wrong_data_error_message(self, language):
-        match language:
-            case self.UK_LANGUAGE:
-                return 'Неправильні дані'
-            case self.RU_LANGUAGE:
-                return 'Неправильные данные'
-            case self.EN_LANGUAGE:
-                return 'Wrong login or password'
-
-    def get_empty_login_error_message(self, language):
-        match language:
-            case self.UK_LANGUAGE:
-                return 'Поле має бути заповнене'
-            case self.RU_LANGUAGE:
-                return 'Поле должно быть заполнено'
-            case self.EN_LANGUAGE:
-                return 'You can’t leave this empty'
+    def get_wrong_data_error_message(self, language: str, mark: str):
+        if mark == 'nonexistent_data':
+            match language:
+                case self.UK_LANGUAGE:
+                    return 'Неправильні дані'
+                case self.RU_LANGUAGE:
+                    return 'Неправильные данные'
+                case self.EN_LANGUAGE:
+                    return 'Wrong login or password'
+        elif mark == 'only_spaces':
+            match language:
+                case self.UK_LANGUAGE:
+                    return 'Поле має бути заповнене'
+                case self.RU_LANGUAGE:
+                    return 'Поле должно быть заполнено'
+                case self.EN_LANGUAGE:
+                    return 'You can’t leave this empty'
 
     @staticmethod
     def get_support_content():

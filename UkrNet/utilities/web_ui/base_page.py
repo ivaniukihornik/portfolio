@@ -92,6 +92,11 @@ class BasePage:
         self.actions.release(self.__wait_until_element_clickable(locator))
         self.actions.perform()
 
+    def _scroll_to_page_position(self, page_position: Literal['top']):
+        match page_position:
+            case 'top':
+                self.driver.execute_script("window.scrollTo(0, 0);")
+
     def _scroll_to_element(self, locator: tuple):
         self.actions.scroll_to_element(self.__wait_until_element_visible(locator)).perform()
 
