@@ -1,3 +1,6 @@
+from typing import Literal
+
+
 class LoginPageEnv:
     UK_LANGUAGE = 'Українська'
     RU_LANGUAGE = 'Русский'
@@ -5,9 +8,10 @@ class LoginPageEnv:
     DEFAULT_LANGUAGE = UK_LANGUAGE
     ALL_LANGUAGES = (UK_LANGUAGE, RU_LANGUAGE, EN_LANGUAGE)
 
-    ANIMATIONS_DURATION = 7
+    ANIMATIONS_DURATION = 5
 
-    def get_title(self, language):
+    def get_title(self, language: str) -> str:
+        """Returns <title> tag content according to obtained language"""
         match language:
             case self.UK_LANGUAGE:
                 return 'Пошта @ ukr.net - українська електронна пошта • Створи емейл'
@@ -18,7 +22,8 @@ class LoginPageEnv:
             case _:
                 return 'Specified language is absent'
 
-    def get_description(self, language):
+    def get_description(self, language: str) -> str:
+        """Returns <description> metatag content according to obtained language"""
         match language:
             case self.UK_LANGUAGE:
                 return (
@@ -34,7 +39,8 @@ class LoginPageEnv:
             case _:
                 return 'Specified language is absent'
 
-    def get_expected_text(self, language):
+    def get_expected_text(self, language: str) -> dict:
+        """Returns dict of all text elements according to obtained language"""
         match language:
             case self.UK_LANGUAGE:
                 return {
@@ -154,7 +160,8 @@ class LoginPageEnv:
             case _:
                 return {}
 
-    def get_wrong_data_error_message(self, language: str, mark: str):
+    def get_wrong_data_error_message(self, language: str, mark: Literal['nonexistent_data', 'only_spaces']) -> str:
+        """Returns error message for login process according to obtained language and error mark"""
         if mark == 'nonexistent_data':
             match language:
                 case self.UK_LANGUAGE:
@@ -173,16 +180,27 @@ class LoginPageEnv:
                     return 'You can’t leave this empty'
 
     @staticmethod
-    def get_support_content():
+    def get_support_content() -> dict:
+        """Returns dict with content of all support contacts"""
         return {
             'MAIL': 'support@ukr.net',
             'VODAFONE': '(050) 204-14-24',
-            'KYIVSTAR': '(096) 718-55-52',
-            'PHONE': '(044) 235-85-55'
+            'KYIVSTAR': '(096) 718-55-52'
         }
 
     def get_all_text_elements(self) -> tuple:
+        """Returns tuple of names of all text elements on page"""
         return tuple(self.get_expected_text(self.DEFAULT_LANGUAGE).keys())
 
     def get_all_support_contacts(self) -> tuple:
+        """Returns tuple of all support contact names on page"""
         return tuple(self.get_support_content().keys())
+
+    def get_language_code(self, language: str) -> str:
+        """Returns language code according to obtained language"""
+        language_codes = {
+            self.UK_LANGUAGE: 'uk',
+            self.RU_LANGUAGE: 'ru',
+            self.EN_LANGUAGE: 'en'
+        }
+        return language_codes.get(language)
