@@ -9,7 +9,7 @@ To view test repository and detected bugs send your email to [my telegram](https
 1. Make sure that **python 3**, **git**, **pip** and **allure** installed in your system
 2. Open terminal in any desired directory and clone repo using ```git clone git@github.com:ivaniukihornik/portfolio.git``` command
 3. Move to root repo directory
-4. Install required packages from _requirements.txt_ using ```pip install -r requirements.txt```
+4. Create and activate virtual environment. Install required packages from _requirements.txt_ using ```pip install -r requirements.txt```
 5. Launch tests using ```pytest``` command. After all tests are finished you`ll see message like this:
 
 ```===================================== 105 passed, 4 skipped in 1627.68s (0:27:07) =====================================```
